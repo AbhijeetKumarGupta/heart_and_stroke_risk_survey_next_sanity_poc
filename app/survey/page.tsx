@@ -91,7 +91,7 @@ export default function Survey() {
                 ...prev, 
                 !previousQuestions?.length ? 
                 surveyData?.survey_questions_length : 
-                (currentOption?.linked_question?.length || 0)
+                (currentOption?.linked_questions_count || 0)
             ]
         )
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])
@@ -102,7 +102,7 @@ export default function Survey() {
           next_Question->,
           options[]{
             ...,
-            linked_question[]->,
+            "linked_questions_count": count(linked_question),
             next_Question->,
           }
         }
