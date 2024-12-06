@@ -63,6 +63,7 @@ export default function Survey() {
 
     const handlePrevious = () => {
         if (previousQuestions.length >= 1) {
+            setIsLastQuestion(false)
             const tempAnswers = { ...answers } as IAnswers
             const lastIndex = previousQuestions.length - 1;
             const previousQuestion = previousQuestions[lastIndex];
