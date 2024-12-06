@@ -73,6 +73,6 @@ interface ISurveyResultProps {
 interface ISurveyQuestionProps { 
     currentQuestion: IQuestion; 
     answers: IAnswers;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, shouldBeOnlyOptionSelected: boolean) => void 
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, option: IOption) => void 
 }
 

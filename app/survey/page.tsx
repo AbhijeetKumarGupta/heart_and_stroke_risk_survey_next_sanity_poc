@@ -32,8 +32,9 @@ export default function Survey() {
     }, []);
 
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>, shouldBeOnlyOptionSelected: boolean = false) => {
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>, option: IOption) => {
         const tempAnswers = { ...answers } as IAnswers
+        const {only_option_selected: shouldBeOnlyOptionSelected = false, next_Question} = option
         if (e.target.checked) {
             const hasOnlyOptionSelected = Object.values(
                 tempAnswers[currentQuestion.name] || {}
@@ -59,6 +60,7 @@ export default function Survey() {
                 delete tempAnswers[currentQuestion.name]
             }
         }
+        setIsLastQuestion(!currentQuestion?.next_Question && !next_Question)
         setAnswers({ ...tempAnswers })
     }
 

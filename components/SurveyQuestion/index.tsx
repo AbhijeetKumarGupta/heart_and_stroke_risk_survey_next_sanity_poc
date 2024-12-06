@@ -12,7 +12,7 @@ export default function SurveyQuestion({ currentQuestion, answers, onChange } : 
                             type="checkbox"
                             name={option?.name}
                             title={option?.title}
-                            onChange={(e) => onChange(e, !!option?.only_option_selected)}
+                            onChange={(e) => onChange(e, option)}
                             value={option?.point}
                             checked={answers?.[currentQuestion?.name]?.[option?.name] !== undefined}
                             className={styles.optionInput}
