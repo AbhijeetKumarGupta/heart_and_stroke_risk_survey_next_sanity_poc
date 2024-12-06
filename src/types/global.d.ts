@@ -41,6 +41,7 @@ interface IRiskRange {
 }
 
 interface ISurveyData {
+    survey_questions_length: number,
     survey_name: string;
     description: string;
     risk_range: IRiskRange;
@@ -60,6 +61,8 @@ interface IAnswers {
 
 interface IHeaderProps { 
     surveyData: ISurveyData;
+    noOfQuestions: number,
+    answeredQuestions: number,
 }
 
 interface ISurveyResultProps { 

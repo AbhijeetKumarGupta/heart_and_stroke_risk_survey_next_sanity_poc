@@ -7,6 +7,7 @@ export async function GET() {
         survey_name,
         description,
         risk_range,
+        "survey_questions_length": count(survey_questions),
         first_question->{
           ...,
           next_Question->,

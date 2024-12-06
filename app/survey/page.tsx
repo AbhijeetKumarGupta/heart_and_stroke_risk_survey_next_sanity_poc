@@ -17,6 +17,7 @@ export default function Survey() {
     const [previousQuestions, setPreviousQuestions] = useState<IQuestion[]>([])
     const [currentQuestion, setCurrentQuestion] = useState<any>(null)
     const [answers, setAnswers] = useState<IAnswers>({})
+    const [counts, setCounts] = useState<number[]>([])
 
     useEffect(() => {
         const fetchSurveyData = async () => {
@@ -70,6 +71,7 @@ export default function Survey() {
             delete tempAnswers[currentQuestion.name]
             setCurrentQuestion(previousQuestion)
             setPreviousQuestions((prev: IQuestion[]) => [...prev.slice(0, lastIndex)]);
+            setCounts((prev: number[]) => [...prev.slice(0, lastIndex)]);
             setAnswers({ ...tempAnswers })
         } else {
             console.log("No previous question available.");
@@ -78,6 +80,18 @@ export default function Survey() {
 
     const handleNext = async () => {
         setFetching(true)
+        const currentOption = currentQuestion?.options?.find(
+            (option: IOption) =>
+                option?.name === Object.keys(answers?.[currentQuestion.name])?.[0]
+        )
+        setCounts((prev) => 
+            [
+                ...prev, 
+                !previousQuestions?.length ? 
+                surveyData?.survey_questions_length : 
+                (currentOption?.linked_question?.length || 0)
+            ]
+        )
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])
         const getNextQuestion = async (questionId: string) => {
             return await client.fetch(`
@@ -86,15 +100,12 @@ export default function Survey() {
           next_Question->,
           options[]{
             ...,
-            next_Question->
+            linked_question[]->,
+            next_Question->,
           }
         }
       `, { questionId })
         }
-        const currentOption = currentQuestion?.options?.find(
-            (option: IOption) =>
-                option?.name === Object.keys(answers?.[currentQuestion.name])?.[0]
-        )
         const questionId = currentOption?.next_Question ?
             currentOption?.next_Question?._id :
             currentQuestion?.next_Question?._id
@@ -111,6 +122,7 @@ export default function Survey() {
     
 
     const handleGetResults = () => {
+        setPreviousQuestions((prev: any) => [...prev, currentQuestion])
         setShowResults(true);
     };
 
@@ -124,10 +136,12 @@ export default function Survey() {
         return notFound()
     }
 
+    const noOfQuestions = counts.reduce((sum, count) => sum + count, 0)
+    
     return (
         <div className={styles.page}>
             <div className={styles.survey_container}>
-                <Header surveyData={surveyData} />
+                <Header surveyData={surveyData} noOfQuestions={noOfQuestions} answeredQuestions={previousQuestions?.length}/>
                 <hr />
                 <main className={styles.main}>
                     {showResults ? (

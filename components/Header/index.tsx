@@ -1,9 +1,8 @@
 import styles from "./header.module.css";
 
-export default function Header({ surveyData }: IHeaderProps) {
+export default function Header({ surveyData, noOfQuestions, answeredQuestions }: IHeaderProps) {
 
-    // Logic to be added
-    const progress = 30;
+    const progress = answeredQuestions && noOfQuestions ? (answeredQuestions/noOfQuestions)*100 : 0;
 
     return (
         <div className={styles.header}>
