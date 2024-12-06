@@ -1,0 +1,35 @@
+.questionContainer {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+.questionContainer h3{
+    margin-top: 20px;
+}
+
+.questionDescription {
+    font-size: 0.8rem;
+    color: #777;
+    margin: 5px 0;
+}
+
+.optionsContainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    overflow-y: scroll;
+}
+
+.optionLabel {
+    font-size: 1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.optionInput {
+    margin-right: 10px;
+}
