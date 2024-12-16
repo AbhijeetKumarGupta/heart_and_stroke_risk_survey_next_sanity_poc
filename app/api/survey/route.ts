@@ -10,10 +10,14 @@ export async function GET() {
         "survey_questions_length": count(survey_questions),
         first_question->{
           ...,
-          next_Question->,
+          next_Question->{
+            _id,
+          },
           options[]{
             ...,
-            next_Question[]->
+            next_Question[]->{
+              _id,
+            }
           }
         },
       }`);

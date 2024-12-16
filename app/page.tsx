@@ -1,14 +1,8 @@
-'use client';
+import RoutingButton from '@/components/RoutingButton/RoutingButton';
 
-import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 export default function Home() {
-  const router = useRouter();
-
-  const handleStartSurvey = () => {
-    router.push('/survey');
-  };
 
   return (
     <div className={styles.page}>
@@ -17,9 +11,7 @@ export default function Home() {
         <p className={styles.description}>
           We're excited to have you here. Click the button below to start the survey.
         </p>
-        <button onClick={handleStartSurvey} className={styles.startButton}>
-          Start Survey
-        </button>
+        <RoutingButton route='/survey' buttonText='Start Survey' className={styles.startButton}/>
       </div>
     </div>
   );

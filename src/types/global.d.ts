@@ -41,7 +41,7 @@ interface IRiskRange {
 }
 
 interface ISurveyData {
-    survey_questions_length: number,
+    survey_questions_length: number;
     survey_name: string;
     description: string;
     risk_range: IRiskRange;
@@ -61,8 +61,8 @@ interface IAnswers {
 
 interface IHeaderProps { 
     surveyData: ISurveyData;
-    noOfQuestions: number,
-    answeredQuestions: number,
+    noOfQuestions: number;
+    answeredQuestions: numbe;
 }
 
 interface ISurveyResultProps { 
@@ -73,6 +73,11 @@ interface ISurveyResultProps {
 interface ISurveyQuestionProps { 
     currentQuestion: IQuestion; 
     answers: IAnswers;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, option: IOption) => void 
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, option: IOption) => void;
 }
 
+interface IRoutingButtonProps {
+    buttonText: string;
+    route: string;
+    className: string;
+}

@@ -1,12 +1,13 @@
 'use client';
-import { useEffect, useState } from 'react';
-import client from "@/sanity/sanityClient";
 
-import styles from "./survey.module.css";
+import { useEffect, useState } from 'react';
+import { notFound } from 'next/navigation';
 import SurveyResult from '@/components/SurveyResult';
 import Header from '@/components/Header';
 import SurveyQuestion from '@/components/SurveyQuestion';
-import { notFound } from 'next/navigation';
+
+import styles from "./survey.module.css";
+
 
 export default function Survey() {
     const [loading, setLoading] = useState<boolean>(true)
@@ -19,11 +20,15 @@ export default function Survey() {
     const [answers, setAnswers] = useState<IAnswers>({})
     const [counts, setCounts] = useState<number[]>([])
 
+    const fetchData = async (url: string) => {
+        const res = await fetch(url);
+        return await res.json();
+    }
+
     useEffect(() => {
         const fetchSurveyData = async () => {
             setLoading(true)
-            const res = await fetch('/api/survey');
-            const data = await res.json();
+            const data = await fetchData('/api/survey')
             setSurveyData(data)
             setCurrentQuestion(data?.first_question)
             setLoading(false)
@@ -95,24 +100,11 @@ export default function Survey() {
             ]
         )
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])
-        const getNextQuestion = async (questionId: string) => {
-            return await client.fetch(`
-        *[_type == "question" && _id==$questionId][0]{
-          ...,
-          next_Question->,
-          options[]{
-            ...,
-            "linked_questions_count": count(linked_question),
-            next_Question->,
-          }
-        }
-      `, { questionId })
-        }
         const questionId = currentOption?.next_Question ?
             currentOption?.next_Question?._id :
             currentQuestion?.next_Question?._id
         if (questionId) {
-            const nextQuestion = await getNextQuestion(questionId)
+            const nextQuestion = await fetchData(`/api/survey/question?questionId=${questionId}`)
             const isLastQuestion = !nextQuestion?.next_Question &&
                 !nextQuestion?.options?.find((option: IOption) => option?.next_Question)
             setIsLastQuestion(isLastQuestion)
