@@ -9,7 +9,7 @@ export default defineType({
             name: 'title',
             title: 'Title',
             type: 'string',
-            validation: (Rule) => Rule.required().min(1).error('Title is required'),
+            validation: (Rule) => Rule.required().min(10).error('Title is required'),
         }),
         defineField({
             name: 'name',
@@ -18,10 +18,28 @@ export default defineType({
             validation: (Rule) => Rule.required().min(1).error('Name is required'),
         }),
         defineField({
+            name: 'field_type',
+            title: 'Field Type',
+            type: 'string',
+            options: {
+              list: [
+                { title: 'Numerical', value: 'numerical' },
+                { title: 'Multiple Choice', value: 'multiple_choice' },
+                { title: 'Dropdown', value: 'dropdown' },
+              ],
+              layout: 'radio',
+            },
+            validation: (Rule) => Rule.required().error('Field Type is required'),
+        }),
+        defineField({
             name: 'multipleSelect',
             title: 'Multiple Select',
             type: 'boolean',
             initialValue: false,
+            hidden: ({ parent }) => {
+                const fieldType = parent?.field_type;
+                return fieldType === 'numerical' || fieldType === 'dropdown';
+            }
         }),
         defineField({
             name: 'description',
@@ -82,14 +100,34 @@ export default defineType({
                         }),
                         /* * */
                         defineField({
+                            name: 'no_of_linked_questions',
+                            title: 'No of linked questions',
+                            type: 'number',
+                            initialValue: 0,
+                            validation: (Rule) => Rule.required().min(0).error('No of linked questions is required'),
+                        }),
+                        defineField({
                             name: 'next_Question',
                             title: 'Next Question',
                             type: 'reference',
                             to: [{ type: 'question' }],
+                            validation: (Rule) => {
+                                  return Rule.custom((value, context) => {
+                                    const { no_of_linked_questions } = context.parent as any;
+                                    if (no_of_linked_questions > 0 && !value) {
+                                      return 'Next question is required';
+                                    }
+                                    return true;
+                                  });
+                              },
                         }),
                     ]
                 })
             ],
+            hidden: ({ parent }) => {
+                const fieldType = parent?.field_type;
+                return fieldType === 'numerical' || fieldType === 'dropdown';
+            }
         }),
         defineField({
             name: 'next_Question',

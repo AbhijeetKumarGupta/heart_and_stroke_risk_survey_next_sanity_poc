@@ -15,11 +15,22 @@ export async function GET(req: NextRequest) {
   try {
     const question = await client.fetch(`
       *[_type == "question" && _id==$questionId][0]{
-        ...,
-        next_Question->,
+        title,
+        name,
+        description,
+        field_type,
+        isRequired,
+        multipleSelect,
+        field_type,
+        next_Question->{
+          _id,
+        },
         options[]{
-          ...,
-          "linked_questions_count": count(linked_question),
+          title,
+          name,
+          no_of_linked_questions,
+          point,
+          only_option_selected,
           next_Question->{
             _id,
           },

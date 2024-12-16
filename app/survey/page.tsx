@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
+
 import SurveyResult from '@/components/SurveyResult';
 import Header from '@/components/Header';
 import SurveyQuestion from '@/components/SurveyQuestion';
+import { FIELD_TYPES } from '@/src/constant';
 
 import styles from "./survey.module.css";
 
@@ -37,35 +39,42 @@ export default function Survey() {
     }, []);
 
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>, option: IOption) => {
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>, option?: IOption) => {
         const tempAnswers = { ...answers } as IAnswers
-        const {only_option_selected: shouldBeOnlyOptionSelected = false, next_Question} = option
-        if (e.target.checked) {
-            const hasOnlyOptionSelected = Object.values(
-                tempAnswers[currentQuestion.name] || {}
-            )?.find(
-                (option: ISelectedOption) => option?.shouldBeOnlyOptionSelected
-            )
-            if (currentQuestion.multipleSelect &&
-                !shouldBeOnlyOptionSelected &&
-                !hasOnlyOptionSelected
-            ) {
-                tempAnswers[currentQuestion.name] = {
-                    ...(tempAnswers[currentQuestion.name] || {}),
-                    [e.target.name]: { point: +e.target.value, shouldBeOnlyOptionSelected }
+        let nextQue;
+        if (currentQuestion?.field_type === FIELD_TYPES.MULTIPLE_CHOICE && option) {
+            const {only_option_selected: shouldBeOnlyOptionSelected = false, next_Question} = option
+            nextQue = next_Question as IQuestion
+            if (e.target.checked) {
+                const hasOnlyOptionSelected = Object.values(
+                    tempAnswers[currentQuestion.name] || {}
+                )?.find(
+                    (option: ISelectedOption) => option?.shouldBeOnlyOptionSelected
+                )
+                if (currentQuestion.multipleSelect &&
+                    !shouldBeOnlyOptionSelected &&
+                    !hasOnlyOptionSelected
+                ) {
+                    tempAnswers[currentQuestion.name] = {
+                        ...((tempAnswers[currentQuestion.name] as MultipleChoiceAnswer) || {}),
+                        [e.target.name]: { point: +e.target.value, shouldBeOnlyOptionSelected }
+                    }
+                } else {
+                    tempAnswers[currentQuestion.name] = {
+                        [e.target.name]: { point: +e.target.value, shouldBeOnlyOptionSelected }
+                    }
                 }
             } else {
-                tempAnswers[currentQuestion.name] = {
-                    [e.target.name]: { point: +e.target.value, shouldBeOnlyOptionSelected }
+                delete (tempAnswers[currentQuestion.name] as MultipleChoiceAnswer)[e.target.name]
+                if (!Object.keys(tempAnswers[currentQuestion.name])?.length) {
+                    delete tempAnswers[currentQuestion.name]
                 }
             }
-        } else {
-            delete tempAnswers[currentQuestion.name][e.target.name]
-            if (!Object.keys(tempAnswers[currentQuestion.name])?.length) {
-                delete tempAnswers[currentQuestion.name]
-            }
+        } else if(currentQuestion?.field_type === FIELD_TYPES.NUMERICAL) {
+            // Need to revisit scoring logic of numerical field
+            tempAnswers[currentQuestion.name] = +e.target.value
         }
-        setIsLastQuestion(!currentQuestion?.next_Question && !next_Question)
+        setIsLastQuestion(!currentQuestion?.next_Question && !nextQue)
         setAnswers({ ...tempAnswers })
     }
 
@@ -95,8 +104,8 @@ export default function Survey() {
             [
                 ...prev, 
                 !previousQuestions?.length ? 
-                surveyData?.survey_questions_length : 
-                (currentOption?.linked_questions_count || 0)
+                surveyData?.non_dependent_questions_count : 
+                (currentOption?.no_of_linked_questions || 0)
             ]
         )
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])

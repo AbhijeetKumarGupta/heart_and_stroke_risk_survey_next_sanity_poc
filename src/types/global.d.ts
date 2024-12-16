@@ -5,10 +5,8 @@ interface IOption {
     next_Question?: {
         _id: string;
     };
+    no_of_linked_questions: number | null;
     only_option_selected?: boolean;
-    linked_question?: {
-        _id: string;
-    }[];
 }
 
 interface IQuestion {
@@ -19,6 +17,7 @@ interface IQuestion {
     name: string;
     next_Question?: IQuestion;
     description: string;
+    field_type: 'numerical' | 'multiple_choice' | 'dropdown';
     _id: string;
 }
 
@@ -41,7 +40,7 @@ interface IRiskRange {
 }
 
 interface ISurveyData {
-    survey_questions_length: number;
+    non_dependent_questions_count: number;
     survey_name: string;
     description: string;
     risk_range: IRiskRange;
@@ -53,10 +52,12 @@ interface ISelectedOption {
     shouldBeOnlyOptionSelected: boolean;
 }
 
+type MultipleChoiceAnswer = {
+    [optionName: string]: ISelectedOption;
+}
+
 interface IAnswers {
-    [questionName: string]: {
-        [optionName: string]: ISelectedOption;
-    };
+    [questionName: string]: MultipleChoiceAnswer | number;
 }
 
 interface IHeaderProps { 
@@ -73,7 +74,7 @@ interface ISurveyResultProps {
 interface ISurveyQuestionProps { 
     currentQuestion: IQuestion; 
     answers: IAnswers;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, option: IOption) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, option?: IOption) => void;
 }
 
 interface IRoutingButtonProps {

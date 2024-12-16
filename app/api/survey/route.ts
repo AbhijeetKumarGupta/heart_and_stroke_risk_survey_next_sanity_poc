@@ -7,14 +7,24 @@ export async function GET() {
         survey_name,
         description,
         risk_range,
-        "survey_questions_length": count(survey_questions),
+        non_dependent_questions_count,
         first_question->{
-          ...,
+          title,
+          name,
+          description,
+          field_type,
+          isRequired,
+          multipleSelect,
+          field_type,
           next_Question->{
             _id,
           },
           options[]{
-            ...,
+            title,
+            name,
+            no_of_linked_questions,
+            point,
+            only_option_selected,
             next_Question[]->{
               _id,
             }

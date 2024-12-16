@@ -31,11 +31,18 @@ export default defineType({
     }),
     /* * */
     defineField({
+      name: 'non_dependent_questions_count',
+      title: 'No of non-dependent questions',
+      type: 'number',
+      validation: (Rule) => Rule.required().error('No of non-dependent questions is required'),
+    }),
+    defineField({
       name: 'first_question',
       title: 'First Question',
       type: 'reference',
       to: [{ type: 'question' }],
-  }),
+      validation: (Rule) => Rule.required().error('First question is required'),
+    }),
     defineField({
       name: 'risk_range',
       title: 'Risk Range',
@@ -50,11 +57,13 @@ export default defineType({
               name: 'min',
               title: 'Min',
               type: 'number',
+              validation: (Rule) => Rule.required().min(0).error('Minimum value is required'),
             }),
             defineField({
               name: 'max',
               title: 'Max',
               type: 'number',
+              validation: (Rule) => Rule.required().error('Maximum value is required'),
             }),
             defineField({
               name: 'message',
@@ -72,11 +81,13 @@ export default defineType({
               name: 'min',
               title: 'Min',
               type: 'number',
+              validation: (Rule) => Rule.required().min(0).error('Minimum value is required'),
             }),
             defineField({
               name: 'max',
               title: 'Max',
               type: 'number',
+              validation: (Rule) => Rule.required().error('Maximum value is required'),
             }),
             defineField({
               name: 'message',
@@ -94,11 +105,13 @@ export default defineType({
               name: 'min',
               title: 'Min',
               type: 'number',
+              validation: (Rule) => Rule.required().min(0).error('Minimum value is required'),
             }),
             defineField({
               name: 'max',
               title: 'Max',
               type: 'number',
+              validation: (Rule) => Rule.required().error('Maximum value is required'),
             }),
             defineField({
               name: 'message',

@@ -6,7 +6,10 @@ export default function SurveyResult({ answers, surveyData } : ISurveyResultProp
         let totalPoints = 0;
         Object.keys(answers).forEach((questionName) => {
             Object.keys(answers[questionName]).forEach((optionName) => {
-                totalPoints += answers[questionName][optionName].point;
+                // Need to revisit scoring logic of numerical field
+                totalPoints += typeof answers[questionName] === 'number' 
+                ? 0 
+                : answers[questionName][optionName].point;
             });
         });
         return totalPoints;
