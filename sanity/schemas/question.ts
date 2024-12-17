@@ -126,7 +126,7 @@ export default defineType({
             ],
             hidden: ({ parent }) => {
                 const fieldType = parent?.field_type;
-                return fieldType === 'numerical' || fieldType === 'dropdown';
+                return fieldType === 'numerical';
             }
         }),
         defineField({

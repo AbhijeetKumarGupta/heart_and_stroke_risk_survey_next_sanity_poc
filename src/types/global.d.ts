@@ -49,7 +49,8 @@ interface ISurveyData {
 
 interface ISelectedOption {
     point: number;
-    shouldBeOnlyOptionSelected: boolean;
+    shouldBeOnlyOptionSelected?: boolean;
+    value?: string;
 }
 
 type MultipleChoiceAnswer = {
@@ -74,7 +75,7 @@ interface ISurveyResultProps {
 interface ISurveyQuestionProps { 
     currentQuestion: IQuestion; 
     answers: IAnswers;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, option?: IOption) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, option?: IOption) => void;
 }
 
 interface IRoutingButtonProps {

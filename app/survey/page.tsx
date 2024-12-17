@@ -73,6 +73,11 @@ export default function Survey() {
         } else if(currentQuestion?.field_type === FIELD_TYPES.NUMERICAL) {
             // Need to revisit scoring logic of numerical field
             tempAnswers[currentQuestion.name] = +e.target.value
+        } else if(currentQuestion?.field_type === FIELD_TYPES.DROPDOWN) {
+            const [name, point] = e.target.value?.split("-")
+            tempAnswers[currentQuestion.name] = {
+                [name]: { point: +point, value: e.target.value }
+            } 
         }
         setIsLastQuestion(!currentQuestion?.next_Question && !nextQue)
         setAnswers({ ...tempAnswers })
@@ -140,6 +145,7 @@ export default function Survey() {
     }
 
     const noOfQuestions = counts.reduce((sum, count) => sum + count, 0)
+    const isNextButtonDisabled = fetching || (currentQuestion?.isRequired && !answers?.[currentQuestion?.name])
     
     return (
         <div className={styles.page}>
@@ -164,7 +170,7 @@ export default function Survey() {
                                     </button>
                                     <button
                                         onClick={isLastQuestion ? handleGetResults : handleNext}
-                                        disabled={fetching || !answers?.[currentQuestion?.name]}
+                                        disabled={isNextButtonDisabled}
                                         className={styles.button}
                                     >
                                         {isLastQuestion ? 'Get Results' : 'Next'}

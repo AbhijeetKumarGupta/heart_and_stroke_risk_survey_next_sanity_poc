@@ -31,7 +31,23 @@ export default function SurveyQuestion({ currentQuestion, answers, onChange }: I
                         type="number"
                         name={currentQuestion?.name}
                         onChange={onChange}
+                        value={answers?.[currentQuestion?.name] as number}
                     />
+                }
+                {
+                    currentQuestion?.field_type === FIELD_TYPES.DROPDOWN &&
+                    <select
+                        value={Object.values(answers?.[currentQuestion?.name] || {})?.[0]?.value || ""}
+                        id={currentQuestion?.name}
+                        name={currentQuestion?.name}
+                        onChange={onChange}
+                    >
+                        <option value="" disabled>Select an option</option>
+                        {currentQuestion?.options?.map((option: IOption) =>
+                            <option value={`${option.name}-${option.point}`} key={option.name}>{option.title}</option>
+                        )
+                        }
+                    </select>
                 }
             </div>
         </div>
