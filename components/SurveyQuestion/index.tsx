@@ -31,7 +31,7 @@ export default function SurveyQuestion({ currentQuestion, answers, onChange }: I
                         type="number"
                         name={currentQuestion?.name}
                         onChange={onChange}
-                        value={answers?.[currentQuestion?.name] as number}
+                        value={answers?.[currentQuestion?.name] as number ?? ""}
                     />
                 }
                 {
