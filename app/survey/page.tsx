@@ -38,6 +38,21 @@ export default function Survey() {
         fetchSurveyData();
     }, []);
 
+    // Logic to be changed as per the requirement
+    const getFormatedAnswers = (answers: IAnswers) => {
+        const finalAnswers = {} as IFinalAnswers
+        Object.keys(answers).forEach((queKey) => {
+            if(typeof answers[queKey] !== 'number'){
+                finalAnswers[queKey] = {}
+                Object.keys(answers[queKey]).forEach((ansKey: string) => {
+                    (finalAnswers[queKey] as IndexableObject)[ansKey] = (answers[queKey] as MultipleChoiceAnswer)[ansKey]?.point
+                })
+            }else{
+                finalAnswers[queKey] = answers[queKey]
+            }
+        })
+        return finalAnswers
+    }
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>, option?: IOption) => {
         const tempAnswers = { ...answers } as IAnswers
@@ -132,6 +147,9 @@ export default function Survey() {
     const handleGetResults = () => {
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])
         setShowResults(true);
+        // Will be saved to database
+        const finalAnswers = getFormatedAnswers(answers)
+        console.log({finalAnswers})
     };
 
     if (loading) return (

@@ -83,3 +83,11 @@ interface IRoutingButtonProps {
     route: string;
     className: string;
 }
+
+type IndexableObject = {
+    [key: string]: number
+}
+
+interface IFinalAnswers {
+    [key: string]: IndexableObject | number
+}
