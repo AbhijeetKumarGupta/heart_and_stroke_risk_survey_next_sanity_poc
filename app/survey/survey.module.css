@@ -52,6 +52,10 @@
     margin-top: 20px;
 }
 
+.buttonContainer.singleButton {
+    justify-content: flex-end;
+}
+
 .button {
     padding: 10px 20px;
     background-color: #3498db;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
+import { useFlags } from 'flagsmith/react';
 
 import SurveyResult from '@/components/SurveyResult';
 import Header from '@/components/Header';
@@ -21,6 +22,7 @@ export default function Survey() {
     const [currentQuestion, setCurrentQuestion] = useState<any>(null)
     const [answers, setAnswers] = useState<IAnswers>({})
     const [counts, setCounts] = useState<number[]>([])
+    const { show_previous_button } = useFlags(['show_previous_button']);
 
     const fetchData = async (url: string) => {
         const res = await fetch(url);
@@ -42,12 +44,12 @@ export default function Survey() {
     const getFormatedAnswers = (answers: IAnswers) => {
         const finalAnswers = {} as IFinalAnswers
         Object.keys(answers).forEach((queKey) => {
-            if(typeof answers[queKey] !== 'number'){
+            if (typeof answers[queKey] !== 'number') {
                 finalAnswers[queKey] = {}
                 Object.keys(answers[queKey]).forEach((ansKey: string) => {
                     (finalAnswers[queKey] as IndexableObject)[ansKey] = (answers[queKey] as MultipleChoiceAnswer)[ansKey]?.point
                 })
-            }else{
+            } else {
                 finalAnswers[queKey] = answers[queKey]
             }
         })
@@ -58,7 +60,7 @@ export default function Survey() {
         const tempAnswers = { ...answers } as IAnswers
         let nextQue;
         if (currentQuestion?.field_type === FIELD_TYPES.MULTIPLE_CHOICE && option) {
-            const {only_option_selected: shouldBeOnlyOptionSelected = false, next_Question} = option
+            const { only_option_selected: shouldBeOnlyOptionSelected = false, next_Question } = option
             nextQue = next_Question as IQuestion
             if (e.target.checked) {
                 const hasOnlyOptionSelected = Object.values(
@@ -85,14 +87,14 @@ export default function Survey() {
                     delete tempAnswers[currentQuestion.name]
                 }
             }
-        } else if(currentQuestion?.field_type === FIELD_TYPES.NUMERICAL) {
+        } else if (currentQuestion?.field_type === FIELD_TYPES.NUMERICAL) {
             // Need to revisit scoring logic of numerical field
             tempAnswers[currentQuestion.name] = +e.target.value
-        } else if(currentQuestion?.field_type === FIELD_TYPES.DROPDOWN) {
+        } else if (currentQuestion?.field_type === FIELD_TYPES.DROPDOWN) {
             const [name, point] = e.target.value?.split("-")
             tempAnswers[currentQuestion.name] = {
                 [name]: { point: +point, value: e.target.value }
-            } 
+            }
         }
         setIsLastQuestion(!currentQuestion?.next_Question && !nextQue)
         setAnswers({ ...tempAnswers })
@@ -120,12 +122,12 @@ export default function Survey() {
             (option: IOption) =>
                 option?.name === Object.keys(answers?.[currentQuestion.name])?.[0]
         )
-        setCounts((prev) => 
+        setCounts((prev) =>
             [
-                ...prev, 
-                !previousQuestions?.length ? 
-                surveyData?.non_dependent_questions_count : 
-                (currentOption?.no_of_linked_questions || 0)
+                ...prev,
+                !previousQuestions?.length ?
+                    surveyData?.non_dependent_questions_count :
+                    (currentOption?.no_of_linked_questions || 0)
             ]
         )
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])
@@ -142,14 +144,12 @@ export default function Survey() {
         setFetching(false)
     }
 
-    
-
     const handleGetResults = () => {
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])
         setShowResults(true);
         // Will be saved to database
         const finalAnswers = getFormatedAnswers(answers)
-        console.log({finalAnswers})
+        console.log({ finalAnswers })
     };
 
     if (loading) return (
@@ -158,34 +158,40 @@ export default function Survey() {
         </div>
     )
 
-    if(!surveyData){
+    if (!surveyData) {
         return notFound()
     }
 
     const noOfQuestions = counts.reduce((sum, count) => sum + count, 0)
     const isNextButtonDisabled = fetching || (currentQuestion?.isRequired && !answers?.[currentQuestion?.name])
-    
+
     return (
         <div className={styles.page}>
             <div className={styles.survey_container}>
-                <Header surveyData={surveyData} noOfQuestions={noOfQuestions} answeredQuestions={previousQuestions?.length}/>
+                <Header surveyData={surveyData} noOfQuestions={noOfQuestions} answeredQuestions={previousQuestions?.length} />
                 <hr />
                 <main className={styles.main}>
                     {showResults ? (
-                        <SurveyResult answers={answers} surveyData={surveyData}/>
+                        <SurveyResult answers={answers} surveyData={surveyData} />
                     ) : (
                         <>
                             <SurveyQuestion currentQuestion={currentQuestion} answers={answers} onChange={onChange} />
                             <div>
                                 <hr />
-                                <div className={styles.buttonContainer}>
-                                    <button
-                                        onClick={handlePrevious}
-                                        disabled={fetching || !previousQuestions?.length}
-                                        className={styles.button}
-                                    >
-                                        Previous
-                                    </button>
+                                <div className={`
+                                    ${styles.buttonContainer} 
+                                    ${!show_previous_button?.enabled ? styles.singleButton : ''}
+                                    `
+                                }>
+                                    {show_previous_button?.enabled &&
+                                        <button
+                                            onClick={handlePrevious}
+                                            disabled={fetching || !previousQuestions?.length}
+                                            className={styles.button}
+                                        >
+                                            Previous
+                                        </button>
+                                    }
                                     <button
                                         onClick={isLastQuestion ? handleGetResults : handleNext}
                                         disabled={isNextButtonDisabled}

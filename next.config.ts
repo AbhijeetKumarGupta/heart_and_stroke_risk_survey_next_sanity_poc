@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,
     SANITY_PROJECT_ID: process.env.SANITY_PROJECT_ID,
     SANITY_DATASET: process.env.SANITY_DATASET,
+    FLAGSMITH_ENVIRONMENT_ID: process.env.FLAGSMITH_ENVIRONMENT_ID,
   },
   reactStrictMode: false,
 };

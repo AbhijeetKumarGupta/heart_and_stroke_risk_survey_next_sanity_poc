@@ -11,6 +11,7 @@
   "dependencies": {
     "@sanity/client": "^6.24.1",
     "@sanity/vision": "^3.65.1",
+    "flagsmith": "^7.0.2",
     "next": "15.0.3",
     "next-sanity": "^9.8.21",
     "react": "^18.2.0",
