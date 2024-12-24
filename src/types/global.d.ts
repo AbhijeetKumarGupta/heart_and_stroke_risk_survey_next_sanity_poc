@@ -65,6 +65,7 @@ interface IHeaderProps {
     surveyData: ISurveyData;
     noOfQuestions: number;
     answeredQuestions: numbe;
+    showProgressBar: boolean
 }
 
 interface ISurveyResultProps { 
@@ -90,4 +91,10 @@ type IndexableObject = {
 
 interface IFinalAnswers {
     [key: string]: IndexableObject | number
+}
+
+interface IBasicInformationProps { 
+    basicInfoQuestions: IQuestion[], 
+    basicInfoData: any, 
+    setBasicInfoData: (data: unknown) => void 
 }

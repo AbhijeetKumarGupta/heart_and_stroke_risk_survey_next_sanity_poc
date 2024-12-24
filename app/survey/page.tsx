@@ -10,6 +10,7 @@ import SurveyQuestion from '@/components/SurveyQuestion';
 import { FIELD_TYPES } from '@/src/constant';
 
 import styles from "./survey.module.css";
+import BasicInformation from '@/components/BasicInformation';
 
 
 export default function Survey() {
@@ -17,9 +18,11 @@ export default function Survey() {
     const [fetching, setFetching] = useState<boolean>(false)
     const [isLastQuestion, setIsLastQuestion] = useState<boolean>(false)
     const [showResults, setShowResults] = useState<boolean>(false);
+    const [basicInfoQuestions, setBasicInfoQuestions] = useState<IQuestion[]>([])
     const [surveyData, setSurveyData] = useState<ISurveyData | null>(null)
     const [previousQuestions, setPreviousQuestions] = useState<IQuestion[]>([])
     const [currentQuestion, setCurrentQuestion] = useState<any>(null)
+    const [basicInfoData, setBasicInfoData] = useState<any>({})
     const [answers, setAnswers] = useState<IAnswers>({})
     const [counts, setCounts] = useState<number[]>([])
     const { show_previous_button } = useFlags(['show_previous_button']);
@@ -30,14 +33,15 @@ export default function Survey() {
     }
 
     useEffect(() => {
-        const fetchSurveyData = async () => {
+        const fetchBasicInfoAndSurveyData = async () => {
             setLoading(true)
+            const { basic_information_questions } = await fetchData('/api/basicInfoQuestions')
+            setBasicInfoQuestions(basic_information_questions)
             const data = await fetchData('/api/survey')
             setSurveyData(data)
-            setCurrentQuestion(data?.first_question)
             setLoading(false)
         };
-        fetchSurveyData();
+        fetchBasicInfoAndSurveyData();
     }, []);
 
     // Logic to be changed as per the requirement
@@ -101,45 +105,45 @@ export default function Survey() {
     }
 
     const handlePrevious = () => {
-        if (previousQuestions.length >= 1) {
-            setIsLastQuestion(false)
-            const tempAnswers = { ...answers } as IAnswers
-            const lastIndex = previousQuestions.length - 1;
-            const previousQuestion = previousQuestions[lastIndex];
-            delete tempAnswers[currentQuestion.name]
-            setCurrentQuestion(previousQuestion)
-            setPreviousQuestions((prev: IQuestion[]) => [...prev.slice(0, lastIndex)]);
-            setCounts((prev: number[]) => [...prev.slice(0, lastIndex)]);
-            setAnswers({ ...tempAnswers })
-        } else {
-            console.log("No previous question available.");
-        }
+        setIsLastQuestion(false)
+        const tempAnswers = { ...answers } as IAnswers
+        const lastIndex = previousQuestions.length - 1;
+        const previousQuestion = previousQuestions[lastIndex];
+        delete tempAnswers[currentQuestion.name]
+        setCurrentQuestion(previousQuestion)
+        setPreviousQuestions((prev: IQuestion[]) => [...prev.slice(0, lastIndex)]);
+        setCounts((prev: number[]) => [...prev.slice(0, lastIndex)]);
+        setAnswers({ ...tempAnswers })
     };
 
     const handleNext = async () => {
-        setFetching(true)
-        const currentOption = currentQuestion?.options?.find(
-            (option: IOption) =>
-                option?.name === Object.keys(answers?.[currentQuestion.name])?.[0]
-        )
-        setCounts((prev) =>
-            [
-                ...prev,
-                !previousQuestions?.length ?
-                    surveyData?.non_dependent_questions_count :
-                    (currentOption?.no_of_linked_questions || 0)
-            ]
-        )
-        setPreviousQuestions((prev: any) => [...prev, currentQuestion])
-        const questionId = currentOption?.next_Question ?
-            currentOption?.next_Question?._id :
-            currentQuestion?.next_Question?._id
-        if (questionId) {
-            const nextQuestion = await fetchData(`/api/survey/question?questionId=${questionId}`)
-            const isLastQuestion = !nextQuestion?.next_Question &&
-                !nextQuestion?.options?.find((option: IOption) => option?.next_Question)
-            setIsLastQuestion(isLastQuestion)
-            setCurrentQuestion(nextQuestion)
+        setFetching(true);
+        if (!currentQuestion) {
+            setCurrentQuestion(surveyData?.first_question)
+        } else {
+            const currentOption = currentQuestion?.options?.find(
+                (option: IOption) =>
+                    option?.name === Object.keys(answers?.[currentQuestion.name])?.[0]
+            )
+            setCounts((prev) =>
+                [
+                    ...prev,
+                    !previousQuestions?.length ?
+                        surveyData?.non_dependent_questions_count :
+                        (currentOption?.no_of_linked_questions || 0)
+                ]
+            )
+            setPreviousQuestions((prev: any) => [...prev, currentQuestion])
+            const questionId = currentOption?.next_Question ?
+                currentOption?.next_Question?._id :
+                currentQuestion?.next_Question?._id
+            if (questionId) {
+                const nextQuestion = await fetchData(`/api/survey/question?questionId=${questionId}`)
+                const isLastQuestion = !nextQuestion?.next_Question &&
+                    !nextQuestion?.options?.find((option: IOption) => option?.next_Question)
+                setIsLastQuestion(isLastQuestion)
+                setCurrentQuestion(nextQuestion)
+            }
         }
         setFetching(false)
     }
@@ -163,46 +167,63 @@ export default function Survey() {
     }
 
     const noOfQuestions = counts.reduce((sum, count) => sum + count, 0)
-    const isNextButtonDisabled = fetching || (currentQuestion?.isRequired && !answers?.[currentQuestion?.name])
-
+    const isValidBasicInfo = Object.values(basicInfoData)
+    ?.filter?.(Boolean)?.length === basicInfoQuestions
+    ?.filter?.((que) => que.isRequired)?.length
+    const isNextButtonDisabled = fetching || 
+    !isValidBasicInfo || 
+    (currentQuestion?.isRequired && !answers?.[currentQuestion?.name])
     return (
         <div className={styles.page}>
             <div className={styles.survey_container}>
-                <Header surveyData={surveyData} noOfQuestions={noOfQuestions} answeredQuestions={previousQuestions?.length} />
+                <Header 
+                    surveyData={surveyData} 
+                    noOfQuestions={noOfQuestions} 
+                    answeredQuestions={previousQuestions?.length} 
+                    showProgressBar={!!currentQuestion} 
+                />
                 <hr />
                 <main className={styles.main}>
                     {showResults ? (
-                        <SurveyResult answers={answers} surveyData={surveyData} />
-                    ) : (
-                        <>
-                            <SurveyQuestion currentQuestion={currentQuestion} answers={answers} onChange={onChange} />
-                            <div>
-                                <hr />
-                                <div className={`
-                                    ${styles.buttonContainer} 
-                                    ${!show_previous_button?.enabled ? styles.singleButton : ''}
-                                    `
-                                }>
-                                    {show_previous_button?.enabled &&
+                            <SurveyResult answers={answers} surveyData={surveyData} />
+                        ) : (
+                            <>
+                                {!currentQuestion ?
+                                    <BasicInformation
+                                        basicInfoQuestions={basicInfoQuestions}
+                                        basicInfoData={basicInfoData}
+                                        setBasicInfoData={setBasicInfoData}
+                                    />
+                                    :
+                                    <SurveyQuestion currentQuestion={currentQuestion} answers={answers} onChange={onChange} />
+                                }
+                                <div>
+                                    <hr />
+                                    <div
+                                        className={`${styles.buttonContainer} 
+                                            ${!show_previous_button?.enabled || !currentQuestion ? styles.singleButton : ''
+                                        }`}
+                                    >
+                                        {show_previous_button?.enabled && currentQuestion &&
+                                            <button
+                                                onClick={handlePrevious}
+                                                disabled={fetching}
+                                                className={styles.button}
+                                            >
+                                                Previous
+                                            </button>
+                                        }
                                         <button
-                                            onClick={handlePrevious}
-                                            disabled={fetching || !previousQuestions?.length}
+                                            onClick={isLastQuestion ? handleGetResults : handleNext}
+                                            disabled={isNextButtonDisabled}
                                             className={styles.button}
                                         >
-                                            Previous
+                                            {isLastQuestion ? 'Get Results' : 'Next'}
                                         </button>
-                                    }
-                                    <button
-                                        onClick={isLastQuestion ? handleGetResults : handleNext}
-                                        disabled={isNextButtonDisabled}
-                                        className={styles.button}
-                                    >
-                                        {isLastQuestion ? 'Get Results' : 'Next'}
-                                    </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                    )}
+                            </>
+                        )}
                 </main>
             </div>
         </div>

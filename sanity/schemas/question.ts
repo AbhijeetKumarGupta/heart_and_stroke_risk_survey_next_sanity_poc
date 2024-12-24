@@ -26,6 +26,7 @@ export default defineType({
                 { title: 'Numerical', value: 'numerical' },
                 { title: 'Multiple Choice', value: 'multiple_choice' },
                 { title: 'Dropdown', value: 'dropdown' },
+                { title: 'String', value: 'string' },
               ],
               layout: 'radio',
             },
@@ -38,7 +39,7 @@ export default defineType({
             initialValue: false,
             hidden: ({ parent }) => {
                 const fieldType = parent?.field_type;
-                return fieldType === 'numerical' || fieldType === 'dropdown';
+                return fieldType === 'numerical' || fieldType === 'dropdown' || fieldType === 'string';
             }
         }),
         defineField({
@@ -126,7 +127,7 @@ export default defineType({
             ],
             hidden: ({ parent }) => {
                 const fieldType = parent?.field_type;
-                return fieldType === 'numerical';
+                return fieldType === 'numerical' || fieldType === 'string';
             }
         }),
         defineField({
