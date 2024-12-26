@@ -12,10 +12,11 @@ import { FIELD_TYPES } from '@/src/constant';
 import styles from "./survey.module.css";
 import BasicInformation from '@/components/BasicInformation';
 
-
+// TODO: Refactor this 
 export default function Survey() {
     const [loading, setLoading] = useState<boolean>(true)
     const [fetching, setFetching] = useState<boolean>(false)
+    const [submitting, setSubmitting] = useState<boolean>(false)
     const [isLastQuestion, setIsLastQuestion] = useState<boolean>(false)
     const [showResults, setShowResults] = useState<boolean>(false);
     const [basicInfoQuestions, setBasicInfoQuestions] = useState<IQuestion[]>([])
@@ -148,12 +149,40 @@ export default function Survey() {
         setFetching(false)
     }
 
-    const handleGetResults = () => {
+    //TODO: Move url to env and create an axios service
+    const submitSurvey = async (survey: ISurveyResponse) => {
+        try {
+            const response = await fetch('https://heart-and-stroke-be-node-mssql.onrender.com/api/survey', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(survey),
+            });
+        
+            if (response.ok) {
+              const data = await response.json();
+              console.log('Survey submitted successfully:', data);
+            } else {
+              console.error('Failed to submit survey', response.status);
+            }
+          } catch (error) {
+            console.error('Error while submitting survey:', error);
+          }
+    }
+
+    const handleGetResults = async () => {
+        setSubmitting(true)
         setPreviousQuestions((prev: any) => [...prev, currentQuestion])
-        setShowResults(true);
-        // Will be saved to database
         const finalAnswers = getFormatedAnswers(answers)
-        console.log({ finalAnswers })
+        const survey = {
+            user_info:basicInfoData,
+            answers: finalAnswers
+        }
+        //TODO: handle submission faliure
+        await submitSurvey(survey)
+        setShowResults(true);
+        setSubmitting(false)
     };
 
     if (loading) return (
@@ -168,11 +197,11 @@ export default function Survey() {
 
     const noOfQuestions = counts.reduce((sum, count) => sum + count, 0)
     const isValidBasicInfo = Object.values(basicInfoData)
-    ?.filter?.(Boolean)?.length === basicInfoQuestions
-    ?.filter?.((que) => que.isRequired)?.length
-    const isNextButtonDisabled = fetching || 
-    !isValidBasicInfo || 
-    (currentQuestion?.isRequired && !answers?.[currentQuestion?.name])
+        ?.filter?.(Boolean)?.length === basicInfoQuestions
+        ?.filter?.((que) => que.isRequired)?.length
+    const isNextButtonDisabled = fetching || submitting ||
+        !isValidBasicInfo || 
+        (currentQuestion?.isRequired && !answers?.[currentQuestion?.name])
     return (
         <div className={styles.page}>
             <div className={styles.survey_container}>
@@ -195,7 +224,12 @@ export default function Survey() {
                                         setBasicInfoData={setBasicInfoData}
                                     />
                                     :
-                                    <SurveyQuestion currentQuestion={currentQuestion} answers={answers} onChange={onChange} />
+                                    <SurveyQuestion 
+                                        currentQuestion={currentQuestion} 
+                                        answers={answers} 
+                                        onChange={onChange} 
+                                        isSubmitting={submitting}
+                                    />
                                 }
                                 <div>
                                     <hr />
@@ -207,7 +241,7 @@ export default function Survey() {
                                         {show_previous_button?.enabled && currentQuestion &&
                                             <button
                                                 onClick={handlePrevious}
-                                                disabled={fetching}
+                                                disabled={fetching || submitting}
                                                 className={styles.button}
                                             >
                                                 Previous
@@ -218,7 +252,7 @@ export default function Survey() {
                                             disabled={isNextButtonDisabled}
                                             className={styles.button}
                                         >
-                                            {isLastQuestion ? 'Get Results' : 'Next'}
+                                            {isLastQuestion ? submitting ? '...Submitting' : 'Get Results' : 'Next'}
                                         </button>
                                     </div>
                                 </div>

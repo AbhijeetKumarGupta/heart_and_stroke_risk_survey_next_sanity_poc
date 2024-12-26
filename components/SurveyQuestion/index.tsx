@@ -2,7 +2,7 @@ import { FIELD_TYPES } from "@/src/constant";
 
 import styles from "./surveyQuestion.module.css";
 
-export default function SurveyQuestion({ currentQuestion, answers, onChange }: ISurveyQuestionProps) {
+export default function SurveyQuestion({ currentQuestion, answers, onChange, isSubmitting }: ISurveyQuestionProps) {
     return (
         <div className={styles.questionContainer}>
             <h3>〕{currentQuestion?.title}</h3>
@@ -20,6 +20,7 @@ export default function SurveyQuestion({ currentQuestion, answers, onChange }: I
                                     value={option?.point}
                                     checked={(answers?.[currentQuestion?.name] as MultipleChoiceAnswer)?.[option?.name] !== undefined}
                                     className={styles.optionInput}
+                                    disabled={isSubmitting}
                                 />
                                 {option?.title}
                             </label>
@@ -32,6 +33,7 @@ export default function SurveyQuestion({ currentQuestion, answers, onChange }: I
                         name={currentQuestion?.name}
                         onChange={onChange}
                         value={answers?.[currentQuestion?.name] as number ?? ""}
+                        disabled={isSubmitting}
                     />
                 }
                 {
@@ -41,6 +43,7 @@ export default function SurveyQuestion({ currentQuestion, answers, onChange }: I
                         id={currentQuestion?.name}
                         name={currentQuestion?.name}
                         onChange={onChange}
+                        disabled={isSubmitting}
                     >
                         <option value="" disabled>Select an option</option>
                         {currentQuestion?.options?.map((option: IOption) =>

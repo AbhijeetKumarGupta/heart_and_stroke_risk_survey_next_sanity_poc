@@ -77,6 +77,7 @@ interface ISurveyQuestionProps {
     currentQuestion: IQuestion; 
     answers: IAnswers;
     onChange: (e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, option?: IOption) => void;
+    isSubmitting: boolean
 }
 
 interface IRoutingButtonProps {
@@ -97,4 +98,15 @@ interface IBasicInformationProps {
     basicInfoQuestions: IQuestion[], 
     basicInfoData: any, 
     setBasicInfoData: (data: unknown) => void 
+}
+
+interface ISurveyResponse {
+    user_info: {
+        [key: string]: string
+    }, 
+    answers: {
+        [key: string]: {
+            [key: string]: number
+        } | number
+    }
 }
