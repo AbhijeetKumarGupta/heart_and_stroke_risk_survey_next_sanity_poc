@@ -1,3 +1,13 @@
+type API_Response = {
+    data: any
+    status: number
+}
+
+type ErrorObject = {
+    error: any,
+    value: any
+}
+
 interface IOption {
     name: string;
     title: string;
@@ -100,7 +110,7 @@ interface IBasicInformationProps {
     setBasicInfoData: (data: unknown) => void 
 }
 
-interface ISurveyResponse {
+interface ISurveyPayload {
     user_info: {
         [key: string]: string
     }, 

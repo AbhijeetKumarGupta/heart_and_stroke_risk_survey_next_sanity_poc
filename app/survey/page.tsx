@@ -11,8 +11,9 @@ import { FIELD_TYPES } from '@/src/constant';
 
 import styles from "./survey.module.css";
 import BasicInformation from '@/components/BasicInformation';
-
-// TODO: Refactor this 
+import { fetchBasicInfoQuestions, fetchNextQuestion, fetchSurveyData, 
+generateSurveyPayload, submitSurvey } from '@/src/utils/survey';
+ 
 export default function Survey() {
     const [loading, setLoading] = useState<boolean>(true)
     const [fetching, setFetching] = useState<boolean>(false)
@@ -28,38 +29,17 @@ export default function Survey() {
     const [counts, setCounts] = useState<number[]>([])
     const { show_previous_button } = useFlags(['show_previous_button']);
 
-    const fetchData = async (url: string) => {
-        const res = await fetch(url);
-        return await res.json();
-    }
-
     useEffect(() => {
-        const fetchBasicInfoAndSurveyData = async () => {
-            setLoading(true)
-            const { basic_information_questions } = await fetchData('/api/basicInfoQuestions')
-            setBasicInfoQuestions(basic_information_questions)
-            const data = await fetchData('/api/survey')
-            setSurveyData(data)
-            setLoading(false)
+        const setBasicInfoAndSurveyData = async () => {
+            setLoading(true);
+            const {data: { basic_information_questions }} = await fetchBasicInfoQuestions();
+            setBasicInfoQuestions(basic_information_questions);
+            const { data: surveyInfo } = await fetchSurveyData();
+            setSurveyData(surveyInfo);
+            setLoading(false);
         };
-        fetchBasicInfoAndSurveyData();
+        setBasicInfoAndSurveyData();
     }, []);
-
-    // Logic to be changed as per the requirement
-    const getFormatedAnswers = (answers: IAnswers) => {
-        const finalAnswers = {} as IFinalAnswers
-        Object.keys(answers).forEach((queKey) => {
-            if (typeof answers[queKey] !== 'number') {
-                finalAnswers[queKey] = {}
-                Object.keys(answers[queKey]).forEach((ansKey: string) => {
-                    (finalAnswers[queKey] as IndexableObject)[ansKey] = (answers[queKey] as MultipleChoiceAnswer)[ansKey]?.point
-                })
-            } else {
-                finalAnswers[queKey] = answers[queKey]
-            }
-        })
-        return finalAnswers
-    }
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>, option?: IOption) => {
         const tempAnswers = { ...answers } as IAnswers
@@ -139,7 +119,7 @@ export default function Survey() {
                 currentOption?.next_Question?._id :
                 currentQuestion?.next_Question?._id
             if (questionId) {
-                const nextQuestion = await fetchData(`/api/survey/question?questionId=${questionId}`)
+                const { data: nextQuestion } = await fetchNextQuestion(questionId)
                 const isLastQuestion = !nextQuestion?.next_Question &&
                     !nextQuestion?.options?.find((option: IOption) => option?.next_Question)
                 setIsLastQuestion(isLastQuestion)
@@ -149,40 +129,17 @@ export default function Survey() {
         setFetching(false)
     }
 
-    //TODO: Move url to env and create an axios service
-    const submitSurvey = async (survey: ISurveyResponse) => {
-        try {
-            const response = await fetch('https://heart-and-stroke-be-node-mssql.onrender.com/api/survey', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(survey),
-            });
-        
-            if (response.ok) {
-              const data = await response.json();
-              console.log('Survey submitted successfully:', data);
-            } else {
-              console.error('Failed to submit survey', response.status);
-            }
-          } catch (error) {
-            console.error('Error while submitting survey:', error);
-          }
-    }
-
     const handleGetResults = async () => {
-        setSubmitting(true)
-        setPreviousQuestions((prev: any) => [...prev, currentQuestion])
-        const finalAnswers = getFormatedAnswers(answers)
-        const survey = {
-            user_info:basicInfoData,
-            answers: finalAnswers
+        setSubmitting(true);
+        setPreviousQuestions((prev: IQuestion[]) => [...prev, currentQuestion]);
+        const surveyPayload = generateSurveyPayload(answers, basicInfoData);
+        const { status } = await submitSurvey(surveyPayload);
+        if(status === 201){
+            setShowResults(true);
+        } else {
+            window.alert("Something went wrong, please try again!");
         }
-        //TODO: handle submission faliure
-        await submitSurvey(survey)
-        setShowResults(true);
-        setSubmitting(false)
+        setSubmitting(false);
     };
 
     if (loading) return (
@@ -192,16 +149,17 @@ export default function Survey() {
     )
 
     if (!surveyData) {
-        return notFound()
+        return notFound();
     }
 
-    const noOfQuestions = counts.reduce((sum, count) => sum + count, 0)
+    const noOfQuestions = counts.reduce((sum, count) => sum + count, 0);
     const isValidBasicInfo = Object.values(basicInfoData)
         ?.filter?.(Boolean)?.length === basicInfoQuestions
-        ?.filter?.((que) => que.isRequired)?.length
+        ?.filter?.((que) => que.isRequired)?.length;
     const isNextButtonDisabled = fetching || submitting ||
         !isValidBasicInfo || 
-        (currentQuestion?.isRequired && !answers?.[currentQuestion?.name])
+        (currentQuestion?.isRequired && !answers?.[currentQuestion?.name]);
+
     return (
         <div className={styles.page}>
             <div className={styles.survey_container}>
