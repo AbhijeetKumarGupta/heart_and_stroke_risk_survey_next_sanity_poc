@@ -12,7 +12,7 @@ import { FIELD_TYPES } from '@/src/constant';
 import styles from "./survey.module.css";
 import BasicInformation from '@/components/BasicInformation';
 import { fetchBasicInfoQuestions, fetchNextQuestion, fetchSurveyData, 
-generateSurveyPayload, submitSurvey } from '@/src/utils/survey';
+    generateSurveyPayload, submitSurvey } from '@/src/utils/survey';
  
 export default function Survey() {
     const [loading, setLoading] = useState<boolean>(true)

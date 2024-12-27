@@ -1,4 +1,5 @@
 import client from "@/sanity/sanityClient";
+import services from "@/src/services";
 
 export async function GET() {
   try {
@@ -39,6 +40,31 @@ export async function GET() {
   } catch (error) {
     return new Response(
       JSON.stringify({ success: false, message: 'Error fetching survey data', error }),
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const payload = await req.json();
+    const response = await services.post('survey', payload, process.env.BASE_URL);
+
+    if (response?.status === 201) {
+      return new Response(
+        JSON.stringify(response?.data),
+        { status: response?.status }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ success: false, message: 'Failed to submit survey' }),
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ success: false, message: 'Error submitting survey', error }),
       { status: 500 }
     );
   }

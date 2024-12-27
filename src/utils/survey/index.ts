@@ -25,7 +25,7 @@ const generateSurveyPayload = ( answers: IAnswers, basicInfoData: any) => {
 
 const submitSurvey = async (payload: ISurveyPayload) => {
     try {
-        const response = await services.post('survey', payload, process.env.BASE_URL);
+        const response = await services.post('survey', payload);
         return response
     } catch (errorObject: any) {
         console.error(errorObject?.error)
