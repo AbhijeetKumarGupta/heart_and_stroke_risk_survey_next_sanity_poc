@@ -1,5 +1,5 @@
 # Live Site Link  
-(Has a timeout issue on submission due to 5-10 sec window for server responce of Vercel and Netlify, but works on Netlify in second try as server stops when not in use and it takes time to restart on first try [WIP])
+(Has a timeout issue on submission due to 5-10 sec window for server response of Vercel and Netlify, but works on Netlify in second try as server stops when not in use and it takes time to restart on first try [WIP])
 
 https://heart-and-stroke-risk-survey.netlify.app
 
