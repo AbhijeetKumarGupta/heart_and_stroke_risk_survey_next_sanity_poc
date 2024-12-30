@@ -1,3 +1,4 @@
+import SurveyQuestion from "../SurveyQuestion";
 import styles from "./basicInformation.module.css";
 
 export default function BasicInformation({ basicInfoQuestions, basicInfoData, setBasicInfoData }: IBasicInformationProps) {
@@ -7,8 +8,9 @@ export default function BasicInformation({ basicInfoQuestions, basicInfoData, se
             <div className={styles.form}>
                 {basicInfoQuestions?.map((question) =>
                     <div className={styles.formGroup} key={question.name}>
-                        <label htmlFor={question.name}>{question.title}</label>
-                        <input id={question.name} name={question.name} required={question.isRequired} value={basicInfoData?.[question.name] ?? ''}
+                        <SurveyQuestion 
+                            currentQuestion={question}
+                            answers={basicInfoData} 
                             onChange={(e) => {
                                 setBasicInfoData((prev: any) => {
                                     return({
@@ -16,7 +18,9 @@ export default function BasicInformation({ basicInfoQuestions, basicInfoData, se
                                         [question.name]: e.target.value
                                     })
                                 })
-                            }}
+                            }} 
+                            isSubmitting={false}
+                            isBasicInfo={true}
                         />
                     </div>
                 )}

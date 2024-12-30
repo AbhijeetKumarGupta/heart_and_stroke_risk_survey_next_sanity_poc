@@ -2,12 +2,19 @@ import { FIELD_TYPES } from "@/src/constant";
 
 import styles from "./surveyQuestion.module.css";
 
-export default function SurveyQuestion({ currentQuestion, answers, onChange, isSubmitting }: ISurveyQuestionProps) {
+export default function SurveyQuestion(
+    { currentQuestion, answers, onChange, isSubmitting, isBasicInfo }: ISurveyQuestionProps
+) {
     return (
-        <div className={styles.questionContainer}>
-            <h3>〕{currentQuestion?.title}</h3>
-            <span className={styles.questionDescription}>{currentQuestion?.description}</span>
-            <div className={styles.optionsContainer}>
+        <div className={isBasicInfo ? '' : styles.questionContainer}>
+            {
+                isBasicInfo ?
+                    <label htmlFor={currentQuestion.name}>{currentQuestion.title}</label>
+                :
+                    <h3>〕{currentQuestion?.title}</h3>
+            }
+            <span className={isBasicInfo ? '' : styles.questionDescription}>{currentQuestion?.description}</span>
+            <div className={isBasicInfo ? '' : styles.optionsContainer}>
                 {
                     currentQuestion?.field_type === FIELD_TYPES.MULTIPLE_CHOICE &&
                         currentQuestion?.options?.map((option: IOption) => (
@@ -25,6 +32,16 @@ export default function SurveyQuestion({ currentQuestion, answers, onChange, isS
                                 {option?.title}
                             </label>
                         ))
+                }
+                {
+                    currentQuestion?.field_type === FIELD_TYPES.STRING &&
+                    <input
+                        type="text"
+                        name={currentQuestion?.name}
+                        onChange={onChange}
+                        value={answers?.[currentQuestion?.name] as number ?? ""}
+                        disabled={isSubmitting}
+                    />
                 }
                 {
                     currentQuestion?.field_type === FIELD_TYPES.NUMERICAL &&

@@ -27,7 +27,7 @@ interface IQuestion {
     name: string;
     next_Question?: IQuestion;
     description: string;
-    field_type: 'numerical' | 'multiple_choice' | 'dropdown';
+    field_type: 'string' | 'numerical' | 'multiple_choice' | 'dropdown';
     _id: string;
 }
 
@@ -88,6 +88,7 @@ interface ISurveyQuestionProps {
     answers: IAnswers;
     onChange: (e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, option?: IOption) => void;
     isSubmitting: boolean
+    isBasicInfo?: boolean
 }
 
 interface IRoutingButtonProps {
