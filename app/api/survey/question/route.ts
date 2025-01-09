@@ -1,4 +1,4 @@
-import client from "@/sanity/sanityClient";
+import { sanityFetch } from "@/sanity/lib/live";
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -13,8 +13,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const question = await client.fetch(`
-      *[_type == "question" && _id==$questionId][0]{
+    const question = await sanityFetch({
+      query: `*[_type == "question" && _id == $questionId][0]{
         title,
         name,
         description,
@@ -36,9 +36,12 @@ export async function GET(req: NextRequest) {
           },
         }
       }
-    `, { questionId });
-
-    return NextResponse.json(question, { status: 200 });
+    `, 
+    params: {
+      questionId
+    }
+  })
+    return NextResponse.json(question.data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: 'Error fetching question', error: error.message || error },

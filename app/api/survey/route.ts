@@ -1,10 +1,10 @@
-import client from "@/sanity/sanityClient";
+import { sanityFetch } from "@/sanity/lib/live";
 import services from "@/src/services";
 
 export async function GET() {
   try {
-    const surveyData = await client.fetch(`
-      *[_type== "survey"][0]{
+    const surveyData = await sanityFetch({
+      query: `*[_type== "survey"][0]{
         survey_name,
         description,
         risk_range,
@@ -31,10 +31,11 @@ export async function GET() {
             }
           }
         },
-      }`);
+      }`
+    })
 
     return new Response(
-      JSON.stringify(surveyData),
+      JSON.stringify(surveyData.data),
       { status: 200 }
     );
   } catch (error) {

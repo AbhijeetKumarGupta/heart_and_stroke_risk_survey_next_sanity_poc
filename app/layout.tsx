@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { VisualEditing } from "next-sanity";
+import { draftMode } from "next/headers";
 import localFont from "next/font/local";
 import { JSXElementConstructor, ReactElement } from "react";
 import flagsmith from 'flagsmith/isomorphic';
 
 import { FlagsmithProviderWrapper } from "@/components/FlagsmithProviderWrapper";
+import { DisableDraftMode } from "@/components/DisableDraftMode";
+import { SanityLive } from "@/sanity/lib/live";
+
 
 import "./globals.css";
 
@@ -34,12 +39,19 @@ export default async function RootLayout({
   }).then(() => flagsmith.getState());
 
   return (
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable}`}>
-          <FlagsmithProviderWrapper flagsmithState={flagsmithState}>
-            {children}
-          </FlagsmithProviderWrapper>
-        </body>
-      </html>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <FlagsmithProviderWrapper flagsmithState={flagsmithState}>
+          {children}
+        </FlagsmithProviderWrapper>
+        <SanityLive />
+        {(await draftMode()).isEnabled && (
+          <>
+            <DisableDraftMode />
+            <VisualEditing />
+          </>
+        )}
+      </body>
+    </html>
   );
 }

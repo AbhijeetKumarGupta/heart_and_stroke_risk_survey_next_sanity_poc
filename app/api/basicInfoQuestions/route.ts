@@ -1,9 +1,9 @@
-import client from "@/sanity/sanityClient";
+import { sanityFetch } from "@/sanity/lib/live";
 
 export async function GET() {
   try {
-    const basicInfoQuestions = await client.fetch(`
-      *[_type== "basic_information"][0]{
+    const basicInfoQuestions = await sanityFetch({
+      query: `*[_type== "basic_information"][0]{
         basic_information_questions[]->{
             title,
             name,
@@ -11,10 +11,11 @@ export async function GET() {
             isRequired,
             field_type
         }
-      }`);
+      }`
+    });
 
     return new Response(
-      JSON.stringify(basicInfoQuestions),
+      JSON.stringify(basicInfoQuestions.data),
       { status: 200 }
     );
   } catch (error) {
