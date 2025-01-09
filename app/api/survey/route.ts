@@ -49,7 +49,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const payload = await req.json();
-    const response = await services.post('survey', payload, process.env.BASE_URL);
+    const response = await services.post('survey', payload, process.env.BE_BASE_URL);
 
     if (response?.status === 201) {
       return new Response(

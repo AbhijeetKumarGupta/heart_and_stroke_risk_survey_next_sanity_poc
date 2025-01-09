@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
     SANITY_PROJECT_ID: process.env.SANITY_PROJECT_ID,
     SANITY_DATASET: process.env.SANITY_DATASET,
     FLAGSMITH_ENVIRONMENT_ID: process.env.FLAGSMITH_ENVIRONMENT_ID,
-    BASE_URL: process.env.BASE_URL
+    BE_BASE_URL: process.env.BE_BASE_URL,
+    FE_BASE_URL: process.env.FE_BASE_URL
   },
   reactStrictMode: false,
 };
