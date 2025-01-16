@@ -13,6 +13,7 @@ import styles from "./survey.module.css";
 import BasicInformation from '@/components/BasicInformation';
 import { fetchBasicInfoQuestions, fetchNextQuestion, fetchSurveyData, 
     generateSurveyPayload, submitSurvey } from '@/src/utils/survey';
+import contentfulClient from '@/contentful/contentfulClient';
  
 export default function Survey() {
     const [loading, setLoading] = useState<boolean>(true)
@@ -37,6 +38,10 @@ export default function Survey() {
             const { data: surveyInfo } = await fetchSurveyData();
             setSurveyData(surveyInfo);
             setLoading(false);
+            const data = await contentfulClient.getEntries({
+                content_type: 'question'
+            })
+            console.log({data})
         };
         setBasicInfoAndSurveyData();
     }, []);
