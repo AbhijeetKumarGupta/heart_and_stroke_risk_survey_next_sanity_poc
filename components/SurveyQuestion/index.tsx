@@ -1,4 +1,5 @@
 import { FIELD_TYPES } from "@/src/constant";
+import { SELECTORS } from "@/cypress/selectors";
 
 import styles from "./surveyQuestion.module.css";
 
@@ -9,16 +10,34 @@ export default function SurveyQuestion(
         <div className={isBasicInfo ? '' : styles.questionContainer}>
             {
                 isBasicInfo ?
-                    <label htmlFor={currentQuestion.name}>{currentQuestion.title}</label>
+                    <label 
+                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.LABEL} 
+                        htmlFor={currentQuestion.name}
+                    >
+                        {currentQuestion.title}
+                    </label>
                 :
-                    <h3>〕{currentQuestion?.title}</h3>
+                    <h3
+                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.LABEL}
+                    >
+                        〕{currentQuestion?.title}
+                    </h3>
             }
-            <span className={isBasicInfo ? '' : styles.questionDescription}>{currentQuestion?.description}</span>
+            <span
+                data-test={SELECTORS.SURVEY_PAGE.QUESTION.DESCRIPTION}
+                className={isBasicInfo ? '' : styles.questionDescription}
+            >
+                {currentQuestion?.description}
+            </span>
             <div className={isBasicInfo ? '' : styles.optionsContainer}>
                 {
                     currentQuestion?.field_type === FIELD_TYPES.MULTIPLE_CHOICE &&
                         currentQuestion?.options?.map((option: IOption) => (
-                            <label key={option.name} className={styles.optionLabel}>
+                            <label 
+                                key={option.name} 
+                                className={styles.optionLabel} 
+                                data-test={SELECTORS.SURVEY_PAGE.QUESTION.OPTIONS}
+                            >
                                 <input
                                     type={currentQuestion.multipleSelect ? "checkbox" : "radio"}
                                     name={option?.name}
@@ -28,6 +47,7 @@ export default function SurveyQuestion(
                                     checked={(answers?.[currentQuestion?.name] as MultipleChoiceAnswer)?.[option?.name] !== undefined}
                                     className={styles.optionInput}
                                     disabled={isSubmitting}
+                                    data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
                                 />
                                 {option?.title}
                             </label>
@@ -41,6 +61,7 @@ export default function SurveyQuestion(
                         onChange={onChange}
                         value={answers?.[currentQuestion?.name] as number ?? ""}
                         disabled={isSubmitting}
+                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
                     />
                 }
                 {
@@ -51,6 +72,7 @@ export default function SurveyQuestion(
                         onChange={onChange}
                         value={answers?.[currentQuestion?.name] as number ?? ""}
                         disabled={isSubmitting}
+                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
                     />
                 }
                 {
@@ -61,6 +83,7 @@ export default function SurveyQuestion(
                         name={currentQuestion?.name}
                         onChange={onChange}
                         disabled={isSubmitting}
+                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
                     >
                         <option value="" disabled>Select an option</option>
                         {currentQuestion?.options?.map((option: IOption) =>

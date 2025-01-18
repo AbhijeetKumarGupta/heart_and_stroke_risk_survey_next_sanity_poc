@@ -6,13 +6,16 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cypress:open": "dotenv -e .env.local -- cypress open",
+    "cypress:run": "dotenv -e .env.local -- cypress run"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
     "@sanity/client": "^6.24.1",
     "@sanity/vision": "^3.65.1",
     "axios": "^1.7.9",
+    "dotenv-cli": "^8.0.0",
     "flagsmith": "^7.0.2",
     "next": "15.0.3",
     "next-sanity": "^9.8.21",
@@ -27,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "cypress": "^13.17.0",
     "@types/redux-persist": "^4.3.1",
     "typescript": "^5"
   }
