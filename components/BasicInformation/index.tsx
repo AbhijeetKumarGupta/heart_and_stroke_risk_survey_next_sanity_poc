@@ -8,17 +8,14 @@ export default function BasicInformation({ basicInfoQuestions, basicInfoData, se
             <div className={styles.form}>
                 {basicInfoQuestions?.map((question) =>
                     <div className={styles.formGroup} key={question.name}>
-                        <SurveyQuestion 
+                        <SurveyQuestion
                             currentQuestion={question}
-                            answers={basicInfoData} 
-                            onChange={(e) => {
-                                setBasicInfoData((prev: any) => {
-                                    return({
-                                        ...prev,
-                                        [question.name]: e.target.value
-                                    })
+                            answers={basicInfoData}
+                            onChange={(e) => 
+                                setBasicInfoData({
+                                    [question.name]: e.target.value
                                 })
-                            }} 
+                            }
                             isSubmitting={false}
                             isBasicInfo={true}
                         />

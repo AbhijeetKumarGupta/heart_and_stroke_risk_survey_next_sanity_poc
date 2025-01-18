@@ -8,7 +8,7 @@ import flagsmith from 'flagsmith/isomorphic';
 import { FlagsmithProviderWrapper } from "@/components/FlagsmithProviderWrapper";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
 import { SanityLive } from "@/sanity/lib/live";
-
+import { ReduxProvider } from "@/components/ReduxProvider";
 
 import "./globals.css";
 
@@ -41,9 +41,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <FlagsmithProviderWrapper flagsmithState={flagsmithState}>
-          {children}
-        </FlagsmithProviderWrapper>
+        <ReduxProvider>
+          <FlagsmithProviderWrapper flagsmithState={flagsmithState}>
+            {children}
+          </FlagsmithProviderWrapper>
+        </ReduxProvider>
         <SanityLive />
         {(await draftMode()).isEnabled && (
           <>

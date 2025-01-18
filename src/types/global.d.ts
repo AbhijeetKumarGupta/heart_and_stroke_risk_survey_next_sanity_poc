@@ -71,20 +71,20 @@ interface IAnswers {
     [questionName: string]: MultipleChoiceAnswer | number;
 }
 
-interface IHeaderProps { 
+interface IHeaderProps {
     surveyData: ISurveyData;
     noOfQuestions: number;
     answeredQuestions: numbe;
     showProgressBar: boolean
 }
 
-interface ISurveyResultProps { 
+interface ISurveyResultProps {
     surveyData: ISurveyData;
     answers: IAnswers;
 }
 
-interface ISurveyQuestionProps { 
-    currentQuestion: IQuestion; 
+interface ISurveyQuestionProps {
+    currentQuestion: IQuestion;
     answers: IAnswers;
     onChange: (e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, option?: IOption) => void;
     isSubmitting: boolean
@@ -95,6 +95,7 @@ interface IRoutingButtonProps {
     buttonText: string;
     route: string;
     className: string;
+    onClick?: () => void
 }
 
 type IndexableObject = {
@@ -105,19 +106,48 @@ interface IFinalAnswers {
     [key: string]: IndexableObject | number
 }
 
-interface IBasicInformationProps { 
-    basicInfoQuestions: IQuestion[], 
-    basicInfoData: any, 
-    setBasicInfoData: (data: unknown) => void 
+interface IBasicInformationProps {
+    basicInfoQuestions: IQuestion[],
+    basicInfoData: any,
+    setBasicInfoData: (data: unknown) => void
 }
 
 interface ISurveyPayload {
     user_info: {
         [key: string]: string
-    }, 
+    },
     answers: {
         [key: string]: {
             [key: string]: number
         } | number
     }
+}
+
+interface SurveyState {
+    currentQuestion: IQuestion | null;
+    answers: IAnswers;
+    previousQuestions: IQuestion[];
+    counts: number[];
+    isLastQuestion: boolean;
+    showResults: boolean;
+    basicInfoData: any;
+    surveyData: ISurveyData | null;
+    loading: boolean;
+    fetching: boolean;
+    submitting: boolean;
+}
+
+interface ISurveyState {
+    surveyData: ISurveyData | null;
+    currentQuestion: IQuestion | null;
+    basicInfoQuestions: IQuestion[];
+    answers: IAnswers;
+    previousQuestions: IQuestion[];
+    counts: number[];
+    isLastQuestion: boolean;
+    showResults: boolean;
+    basicInfoData: any;
+    loading: boolean;
+    fetching: boolean;
+    submitting: boolean;
 }
