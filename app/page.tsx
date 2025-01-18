@@ -11,7 +11,7 @@ export default function Home() {
         <p className={styles.description}>
           We're excited to have you here. Click the button below to start the survey.
         </p>
-        <RoutingButton route='/survey' buttonText='Start Survey' className={styles.startButton}/>
+        <RoutingButton route='/survey' buttonText='Start Survey' className={styles.startButton} />
       </div>
     </div>
   );
