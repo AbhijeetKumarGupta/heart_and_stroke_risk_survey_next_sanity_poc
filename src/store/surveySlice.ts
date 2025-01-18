@@ -44,7 +44,6 @@ const surveySlice = createSlice({
             state.showResults = action.payload;
         },
         setBasicInfoData(state, action: PayloadAction<any>) {
-            console.log(action.payload)
             state.basicInfoData = action.payload;
         },
         setLoading(state, action: PayloadAction<boolean>) {

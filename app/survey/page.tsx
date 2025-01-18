@@ -9,14 +9,14 @@ import SurveyResult from '@/components/SurveyResult';
 import Header from '@/components/Header';
 import SurveyQuestion from '@/components/SurveyQuestion';
 import { FIELD_TYPES } from '@/src/constant';
-
-import styles from "./survey.module.css";
 import BasicInformation from '@/components/BasicInformation';
 import { fetchBasicInfoQuestions, fetchNextQuestion, fetchSurveyData, 
     generateSurveyPayload, submitSurvey } from '@/src/utils/survey';
 import { setSurveyData, setCurrentQuestion, setBasicInfoQuestions, setAnswers, setCounts, 
     setIsLastQuestion, setShowResults, setBasicInfoData, setFetching, 
     setSubmitting, setPreviousQuestions, setLoading } from '@/src/store/surveySlice';
+
+import styles from "./survey.module.css";
  
 export default function Survey() {
     const dispatch = useDispatch();
