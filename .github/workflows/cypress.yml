@@ -1,0 +1,54 @@
+name: Cypress Tests
+
+on: [push]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2]
+
+    env:
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}
+      SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
+      SANITY_DATASET: ${{ secrets.SANITY_DATASET }}
+      SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+      FLAGSMITH_ENVIRONMENT_ID: ${{ secrets.FLAGSMITH_ENVIRONMENT_ID }}
+      BE_BASE_URL: ${{ secrets.BE_BASE_URL }}
+      FE_BASE_URL: ${{ secrets.FE_BASE_URL }}
+      SANITY_PREVIEW_SECRET: ${{ secrets.SANITY_PREVIEW_SECRET }}
+      CONTENTFUL_SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
+      CONTENTFUL_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_ACCESS_TOKEN }}
+      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js app
+        run: npm run build
+      
+      - name: Start Next.js server in the background
+        run: |
+          npm start &
+          sleep 15
+      
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          start: true
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          record: true
+          parallel: true

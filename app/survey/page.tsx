@@ -15,6 +15,7 @@ import { fetchBasicInfoQuestions, fetchNextQuestion, fetchSurveyData,
 import { setSurveyData, setCurrentQuestion, setBasicInfoQuestions, setAnswers, setCounts, 
     setIsLastQuestion, setShowResults, setBasicInfoData, setFetching, 
     setSubmitting, setPreviousQuestions, setLoading } from '@/src/store/surveySlice';
+import { SELECTORS } from '@/cypress/selectors';
 
 import styles from "./survey.module.css";
  
@@ -202,6 +203,7 @@ export default function Survey() {
                                                 onClick={handlePrevious}
                                                 disabled={fetching || submitting}
                                                 className={styles.button}
+                                                data-test={SELECTORS.SURVEY_PAGE.BUTTON.PREVIOUS}
                                             >
                                                 Previous
                                             </button>
@@ -210,6 +212,7 @@ export default function Survey() {
                                             onClick={isLastQuestion ? handleGetResults : handleNext}
                                             disabled={isNextButtonDisabled}
                                             className={styles.button}
+                                            data-test={SELECTORS.SURVEY_PAGE.BUTTON.NEXT_OR_GET_RESULTS}
                                         >
                                             {isLastQuestion ? submitting ? '...Submitting' : 'Get Results' : 'Next'}
                                         </button>

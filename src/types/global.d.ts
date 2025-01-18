@@ -95,6 +95,7 @@ interface IRoutingButtonProps {
     buttonText: string;
     route: string;
     className: string;
+    dataTest?: string
     onClick?: () => void
 }
 

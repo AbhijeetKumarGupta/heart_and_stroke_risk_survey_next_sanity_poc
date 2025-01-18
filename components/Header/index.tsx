@@ -1,3 +1,5 @@
+import { SELECTORS } from "@/cypress/selectors";
+
 import styles from "./header.module.css";
 
 export default function Header(
@@ -9,18 +11,33 @@ export default function Header(
 
     return (
         <div className={styles.header}>
-            <h1>{surveyData?.survey_name}</h1>
-            <p>{surveyData?.description}</p>
+            <h1 
+                data-test={SELECTORS.SURVEY_PAGE.SURVEY.NAME}
+            >
+                {surveyData?.survey_name}
+            </h1>
+            <p 
+                data-test={SELECTORS.SURVEY_PAGE.SURVEY.DESCRIPTION}
+            >
+                {surveyData?.description}
+            </p>
             {showProgressBar &&
             <div className={styles.progressBarContainer}>
-                <div className={styles.progressBarLabel}>
+                <div
+                    data-test={SELECTORS.SURVEY_PAGE.PROGRESS.LABEL} 
+                    className={styles.progressBarLabel}
+                >
                     <span>Progress</span>
                 </div>
                 <div
+                    data-test={SELECTORS.SURVEY_PAGE.PROGRESS.BAR} 
                     className={styles.progressBar}
                     style={{ width: `${progress}%` }}
                 />
-                <div className={styles.progressPercentage}>
+                <div
+                    data-test={SELECTORS.SURVEY_PAGE.PROGRESS.AMOUNT}
+                    className={styles.progressPercentage}
+                >
                     <span>{Math.round(progress)}%</span>
                 </div>
             </div>
