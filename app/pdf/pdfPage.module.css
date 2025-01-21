@@ -1,0 +1,27 @@
+.buttonsContainer {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.button {
+    background-color: #06355b;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    border-color: #06355b;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+    background-color: #5f27b4;
+    transform: scale(1.005);
+}
+
+.button:active {
+    background-color: #9a0e0e;
+}

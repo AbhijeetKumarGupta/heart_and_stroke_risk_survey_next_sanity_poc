@@ -24,6 +24,6 @@
     },
     "types": ["jest", "@testing-library/jest-dom"],
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "__tests__/**/*.test.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "__tests__/**/*.test.js", "app/api/**/*.js"],
   "exclude": ["node_modules"]
 }

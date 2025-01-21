@@ -12,6 +12,7 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.1.6",
     "@reduxjs/toolkit": "^2.5.0",
     "@sanity/client": "^6.24.1",
     "@sanity/vision": "^3.65.1",
@@ -20,6 +21,7 @@
     "flagsmith": "^7.0.2",
     "next": "15.0.3",
     "next-sanity": "^9.8.21",
+    "puppeteer": "^24.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.2.0",
