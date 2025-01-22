@@ -127,6 +127,6 @@ export const POST = async (req) => {
     });
   } catch (error) {
     console.error(error);
-    return new Response("Error generating PDF", { status: 500 });
+    return new Response(error, { status: 500 });
   }
 };

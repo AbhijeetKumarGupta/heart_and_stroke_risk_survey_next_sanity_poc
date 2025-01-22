@@ -1,13 +1,31 @@
 'use client';
 
 import { useState } from 'react';
+import ReactDOMServer from 'react-dom/server';
 
 import { pdf } from '@react-pdf/renderer';
 import PdfDocument from './PdfDocument';
 import styles from './pdfPage.module.css';
+import Header from '@/components/PDF/Header';
+import Body from '@/components/PDF/Body';
+import Footer from '@/components/PDF/Footer';
 
 const GeneratePDF = () => {
     const [loading, setIsLoading] = useState<boolean>(false);
+    
+
+    const htmlContent = ReactDOMServer.renderToStaticMarkup(
+        <html>
+          <head>
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+          </head>
+          <body>
+            <Header />
+            <Body />
+            <Footer />
+          </body>
+        </html>
+      );
 
     const processBlob = (blob: Blob, fileName: string) => {
         const url = URL.createObjectURL(blob);
@@ -31,7 +49,7 @@ const GeneratePDF = () => {
         });
     };
 
-    const handleGenerateHTMLPDF = async () => {
+    const handleDownloadHTMLPDF = async () => {
         setIsLoading(true)
         const response = await fetch("/api/generate-pdf", {
             method: "POST",
@@ -46,13 +64,35 @@ const GeneratePDF = () => {
         }
     };
 
+    const handleDownloadComponentPDF = async () => {
+        setIsLoading(true)
+        const response = await fetch('/api/generate-component-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ html: `<!DOCTYPE html>${htmlContent}` }),
+        });
+    
+        if (response.ok) {
+            const pdfBlob = await response.blob();
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfUrl);
+            setIsLoading(false)
+        }else {
+            alert("Failed to generate PDF");
+            setIsLoading(false)
+        }
+      };
+
     return (
         <div className={styles.buttonsContainer}>
             <button onClick={handleDownloadPDF} className={styles.button} disabled={loading}>
                 Download 'react-pdf' PDF - Built using 'react-pdf' elements{loading ? '...' : ''}
             </button>
-            <button onClick={handleGenerateHTMLPDF} className={styles.button}>
+            <button onClick={handleDownloadHTMLPDF} className={styles.button}>
                 Download 'puppeteer' PDF - Built using HTML and CSS{loading ? '...' : ''}
+            </button>
+            <button onClick={handleDownloadComponentPDF} className={styles.button}>
+                Download 'puppeteer' PDF - Built using Components{loading ? '...' : ''}
             </button>
         </div>
     );
