@@ -1,22 +1,31 @@
+import { ChangeEvent } from "react";
+
 import { FIELD_TYPES } from "@/src/constant";
 import { SELECTORS } from "@/cypress/selectors";
 
 import styles from "./surveyQuestion.module.css";
 
 export default function SurveyQuestion(
-    { currentQuestion, answers, onChange, isSubmitting, isBasicInfo }: ISurveyQuestionProps
+    { currentQuestion, answers, onChange, isSubmitting, isBasicInfo }:
+        {
+            currentQuestion: Question;
+            answers: Answers & BasicInfoData;
+            onChange: (e: ChangeEvent<HTMLInputElement>, option?: Option, subOption?: SubOption) => void;
+            isSubmitting: boolean;
+            isBasicInfo?: boolean
+        }
 ) {
     return (
-        <div className={isBasicInfo ? '' : styles.questionContainer}>
+        <div className={isBasicInfo ? styles.basicInfoContainer : styles.questionContainer}>
             {
                 isBasicInfo ?
-                    <label 
-                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.LABEL} 
+                    <label
+                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.LABEL}
                         htmlFor={currentQuestion.name}
                     >
                         {currentQuestion.title}
                     </label>
-                :
+                    :
                     <h3
                         data-test={SELECTORS.SURVEY_PAGE.QUESTION.LABEL}
                     >
@@ -29,43 +38,67 @@ export default function SurveyQuestion(
             >
                 {currentQuestion?.description}
             </span>
-            <div className={isBasicInfo ? '' : styles.optionsContainer}>
+            <div key={currentQuestion.name} className={isBasicInfo ? '' : styles.optionsContainer}>
                 {
-                    currentQuestion?.field_type === FIELD_TYPES.MULTIPLE_CHOICE &&
-                        currentQuestion?.options?.map((option: IOption) => (
-                            <label 
-                                key={option.name} 
-                                className={styles.optionLabel} 
+                    currentQuestion?.fieldType === FIELD_TYPES.MULTIPLE_CHOICE &&
+                    currentQuestion?.options?.map((option: any) => (
+                        <div key={option?.name}>
+                            <label
+                                className={styles.optionLabel}
                                 data-test={SELECTORS.SURVEY_PAGE.QUESTION.OPTIONS}
                             >
                                 <input
-                                    type={currentQuestion.multipleSelect ? "checkbox" : "radio"}
+                                    type={currentQuestion.allowMultipleSelect ? "checkbox" : "radio"}
                                     name={option?.name}
                                     title={option?.title}
                                     onChange={(e) => onChange(e, option)}
-                                    value={option?.point}
-                                    checked={(answers?.[currentQuestion?.name] as MultipleChoiceAnswer)?.[option?.name] !== undefined}
+                                    value={option?.name}
+                                    checked={answers?.[currentQuestion?.name]?.[option?.name] !== undefined}
                                     className={styles.optionInput}
                                     disabled={isSubmitting}
                                     data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
                                 />
                                 {option?.title}
                             </label>
-                        ))
+                            {
+                                option?.subOptions?.length && answers?.[currentQuestion?.name]?.[option?.name] !== undefined &&
+                                option?.subOptions?.map((subOption: any) => (
+                                    <label
+                                        className={styles.optionLabel}
+                                        key={`${option?.name}-${subOption?.name}`}
+                                        style={{ marginLeft: '10px' }}
+                                    >
+                                        <input
+                                            type={currentQuestion.allowMultipleSelect ? "checkbox" : "radio"}
+                                            name={subOption?.name}
+                                            title={subOption?.title}
+                                            onChange={(e) => onChange(e, option, subOption)}
+                                            value={subOption?.name}
+                                            checked={answers?.[currentQuestion?.name]?.[option?.name][subOption?.name] !== undefined}
+                                            className={styles.optionInput}
+                                            disabled={isSubmitting}
+                                        // data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
+                                        />
+                                        {subOption?.title}
+                                    </label>
+                                ))
+                            }
+                        </div>
+                    ))
                 }
                 {
-                    currentQuestion?.field_type === FIELD_TYPES.STRING &&
+                    currentQuestion?.fieldType === FIELD_TYPES.STRING &&
                     <input
                         type="text"
                         name={currentQuestion?.name}
                         onChange={onChange}
-                        value={answers?.[currentQuestion?.name] as number ?? ""}
+                        value={answers?.[currentQuestion?.name] as string ?? ""}
                         disabled={isSubmitting}
                         data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
                     />
                 }
                 {
-                    currentQuestion?.field_type === FIELD_TYPES.NUMERICAL &&
+                    currentQuestion?.fieldType === FIELD_TYPES.NUMERICAL &&
                     <input
                         type="number"
                         name={currentQuestion?.name}
@@ -74,23 +107,6 @@ export default function SurveyQuestion(
                         disabled={isSubmitting}
                         data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
                     />
-                }
-                {
-                    currentQuestion?.field_type === FIELD_TYPES.DROPDOWN &&
-                    <select
-                        value={Object.values(answers?.[currentQuestion?.name] || {})?.[0]?.value || ""}
-                        id={currentQuestion?.name}
-                        name={currentQuestion?.name}
-                        onChange={onChange}
-                        disabled={isSubmitting}
-                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
-                    >
-                        <option value="" disabled>Select an option</option>
-                        {currentQuestion?.options?.map((option: IOption) =>
-                            <option value={`${option.name}-${option.point}`} key={option.name}>{option.title}</option>
-                        )
-                        }
-                    </select>
                 }
             </div>
         </div>

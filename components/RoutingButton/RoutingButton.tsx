@@ -1,11 +1,15 @@
-'use client';
-
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 
 import { resetSurveyState } from '@/src/store/surveySlice';
 
-export default function RoutingButton({ buttonText, route, className, dataTest, onClick}: IRoutingButtonProps) {
+export default function RoutingButton({ buttonText, route, className, dataTest, onClick }: {
+  buttonText: string;
+  route: string;
+  className: string;
+  dataTest?: string
+  onClick?: () => void
+}) {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -16,8 +20,8 @@ export default function RoutingButton({ buttonText, route, className, dataTest, 
   };
 
   return (
-        <button data-test={dataTest} id="button" onClick={handleStartSurvey} className={className}>
-          {buttonText}
-        </button>
+    <button data-test={dataTest} id="button" onClick={handleStartSurvey} className={className}>
+      {buttonText}
+    </button>
   );
 }

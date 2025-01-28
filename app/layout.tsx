@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
-import { VisualEditing } from "next-sanity";
-import { draftMode } from "next/headers";
-import localFont from "next/font/local";
 import { JSXElementConstructor, ReactElement } from "react";
+import localFont from "next/font/local";
 import flagsmith from 'flagsmith/isomorphic';
 
 import { FlagsmithProviderWrapper } from "@/components/FlagsmithProviderWrapper";
-import { DisableDraftMode } from "@/components/DisableDraftMode";
-import { SanityLive } from "@/sanity/lib/live";
 import { ReduxProvider } from "@/components/ReduxProvider";
 
 import "./globals.css";
@@ -46,13 +42,6 @@ export default async function RootLayout({
             {children}
           </FlagsmithProviderWrapper>
         </ReduxProvider>
-        <SanityLive />
-        {(await draftMode()).isEnabled && (
-          <>
-            <DisableDraftMode />
-            <VisualEditing />
-          </>
-        )}
       </body>
     </html>
   );

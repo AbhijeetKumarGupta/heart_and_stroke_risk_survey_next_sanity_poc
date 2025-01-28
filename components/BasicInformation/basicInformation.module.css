@@ -64,3 +64,7 @@
 .continueButton:hover {
     background-color: #236e4a;
 }
+
+.description {
+    margin-bottom: 20px;
+}

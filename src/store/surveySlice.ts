@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState: ISurveyState = {
+const initialState: ReduxState = {
     surveyData: null,
     currentQuestion: null,
-    basicInfoQuestions: [],
+    ageInformation: null,
+    basicInfoQuestions: null,
     answers: {},
     previousQuestions: [],
     counts: [],
@@ -13,50 +14,58 @@ const initialState: ISurveyState = {
     loading: true,
     fetching: false,
     submitting: false,
+    riskFactors: {}
 };
 
 const surveySlice = createSlice({
     name: 'survey',
     initialState,
     reducers: {
-        setSurveyData(state, action: PayloadAction<ISurveyData>) {
+        setSurveyData(state, action: PayloadAction<ReduxState['surveyData']>) {
             state.surveyData = action.payload;
         },
-        setCurrentQuestion(state, action: PayloadAction<IQuestion | null>) {
+        setCurrentQuestion(state, action: PayloadAction<ReduxState['currentQuestion']>) {
             state.currentQuestion = action.payload;
         },
-        setBasicInfoQuestions(state, action: PayloadAction<IQuestion[]>){
+        setAgeInformation(state, action: PayloadAction<ReduxState['ageInformation']>) {
+            state.ageInformation = action.payload;
+        },
+        setBasicInfoQuestions(state, action: PayloadAction<ReduxState['basicInfoQuestions']>){
             state.basicInfoQuestions = action.payload;
         },
-        setAnswers(state, action: PayloadAction<IAnswers>) {
+        setAnswers(state, action: PayloadAction<ReduxState['answers']>) {
             state.answers = action.payload;
         },
-        setPreviousQuestions(state, action: PayloadAction<IQuestion[]>) {
+        setPreviousQuestions(state, action: PayloadAction<ReduxState['previousQuestions']>) {
             state.previousQuestions = action.payload;
         },
-        setCounts(state, action: PayloadAction<number[]>) {
+        setCounts(state, action: PayloadAction<ReduxState['counts']>) {
             state.counts = action.payload;
         },
-        setIsLastQuestion(state, action: PayloadAction<boolean>) {
+        setIsLastQuestion(state, action: PayloadAction<ReduxState['isLastQuestion']>) {
             state.isLastQuestion = action.payload;
         },
-        setShowResults(state, action: PayloadAction<boolean>) {
+        setShowResults(state, action: PayloadAction<ReduxState['showResults']>) {
             state.showResults = action.payload;
         },
-        setBasicInfoData(state, action: PayloadAction<any>) {
+        setBasicInfoData(state, action: PayloadAction<ReduxState['basicInfoData']>) {
             state.basicInfoData = action.payload;
         },
-        setLoading(state, action: PayloadAction<boolean>) {
+        setLoading(state, action: PayloadAction<ReduxState['loading']>) {
             state.loading = action.payload;
         },
-        setFetching(state, action: PayloadAction<boolean>) {
+        setFetching(state, action: PayloadAction<ReduxState['fetching']>) {
             state.fetching = action.payload;
         },
-        setSubmitting(state, action: PayloadAction<boolean>) {
+        setSubmitting(state, action: PayloadAction<ReduxState['submitting']>) {
             state.submitting = action.payload;
         },
+        setRiskFactors(state, action: PayloadAction<ReduxState['riskFactors']>) {
+            state.riskFactors = action.payload;
+        },
         resetSurveyState(state) {
-            return initialState;
+            const tempState = {surveyData: state.surveyData}
+            return {...initialState, ...tempState};
         },
     },
 });
@@ -74,7 +83,9 @@ export const {
     setLoading,
     setFetching,
     setSubmitting,
-    resetSurveyState
+    resetSurveyState,
+    setAgeInformation,
+    setRiskFactors
 } = surveySlice.actions;
 
 export default surveySlice.reducer;

@@ -6,21 +6,53 @@
     border-radius: 8px;
     text-align: center;
     margin-top: 10px;
-    height: 80%;
+    height: 100%;
 }
 
-.resultContainer h3 {
+.title {
     font-size: 1.5rem;
     color: #00293c;
 }
 
-.resultContainer p {
-    font-size: 1rem;
-    color: #666;
-    margin: 10px 0;
+.resultContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: scroll;
 }
 
-.resultContainer .thankYouMessage {
+.sectionTitle {
+    margin: 10px 0px;
+    text-decoration: underline;
+    font-size: 1.2rem;
+    color: #00293c;
+}
+
+.riskFactor {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.riskFactor h4 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.recommendationTitle {
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.recommendationList {
+    margin-left: 20px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.thankYouMessage {
     margin-top: 20px;
     font-size: 1.1rem;
     font-weight: bold;

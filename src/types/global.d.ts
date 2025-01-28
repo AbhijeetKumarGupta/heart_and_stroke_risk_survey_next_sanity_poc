@@ -1,154 +1,112 @@
-type API_Response = {
-    data: any
-    status: number
-}
+import { Document } from '@contentful/rich-text-types';
 
-type ErrorObject = {
-    error: any,
-    value: any
-}
-
-interface IOption {
-    name: string;
-    title: string;
-    point: number;
-    next_Question?: {
-        _id: string;
+declare global {
+    type Instruction = {
+        title: string;
+        description: string;
+        icon: Icon;
     };
-    no_of_linked_questions: number | null;
-    only_option_selected?: boolean;
-}
 
-interface IQuestion {
-    multipleSelect: boolean;
-    options: IOption[];
-    title: string;
-    isRequired: boolean;
-    name: string;
-    next_Question?: IQuestion;
-    description: string;
-    field_type: 'string' | 'numerical' | 'multiple_choice' | 'dropdown';
-    _id: string;
-}
-
-interface IRiskRange {
-    low_risk_range: {
-        min: number;
-        max: number;
-        message: string;
+    type Option = {
+        title: string;
+        name: string;
+        nextQuestion: Question;
+        subOptions?: SubOption[];
+        riskFactor: RiskFactor;
+        noOfRelatedSubQuestions?: number
     };
-    moderate_risk_range: {
-        min: number;
-        max: number;
-        message: string;
+
+    type SubOption = {
+        title: string;
+        name: string;
+        riskFactor?: RiskFactor;
     };
-    high_risk_range: {
-        min: number;
-        max: number;
-        message: string;
+
+    type Question = {
+        title: string;
+        description: string;
+        slug: string;
+        nextQuestion?: Question;
+        name: string;
+        options?: Option[];
+        isOptional: boolean;
+        allowMultipleSelect: boolean;
+        fieldType: 'Number' | 'String' | 'Multiple Choise';
     };
-}
 
-interface ISurveyData {
-    non_dependent_questions_count: number;
-    survey_name: string;
-    description: string;
-    risk_range: IRiskRange;
-    first_question: IQuestion;
-}
+    type Recommendation = {
+        title: string;
+        points: string[];
+    };
 
-interface ISelectedOption {
-    point: number;
-    shouldBeOnlyOptionSelected?: boolean;
-    value?: string;
-}
+    type RiskFactor = {
+        title: string;
+        recommendation: Recommendation[];
+        identifier: string;
+        category: {
+            title: string;
+            description: Document;
+        };
+        description: Document;
+    };
 
-type MultipleChoiceAnswer = {
-    [optionName: string]: ISelectedOption;
-}
-
-interface IAnswers {
-    [questionName: string]: MultipleChoiceAnswer | number;
-}
-
-interface IHeaderProps {
-    surveyData: ISurveyData;
-    noOfQuestions: number;
-    answeredQuestions: numbe;
-    showProgressBar: boolean
-}
-
-interface ISurveyResultProps {
-    surveyData: ISurveyData;
-    answers: IAnswers;
-}
-
-interface ISurveyQuestionProps {
-    currentQuestion: IQuestion;
-    answers: IAnswers;
-    onChange: (e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, option?: IOption) => void;
-    isSubmitting: boolean
-    isBasicInfo?: boolean
-}
-
-interface IRoutingButtonProps {
-    buttonText: string;
-    route: string;
-    className: string;
-    dataTest?: string
-    onClick?: () => void
-}
-
-type IndexableObject = {
-    [key: string]: number
-}
-
-interface IFinalAnswers {
-    [key: string]: IndexableObject | number
-}
-
-interface IBasicInformationProps {
-    basicInfoQuestions: IQuestion[],
-    basicInfoData: any,
-    setBasicInfoData: (data: unknown) => void
-}
-
-interface ISurveyPayload {
-    user_info: {
-        [key: string]: string
-    },
-    answers: {
-        [key: string]: {
-            [key: string]: number
-        } | number
+    type FilteredRiskFactor = {
+        [key: string]: RiskFactor
     }
-}
 
-interface SurveyState {
-    currentQuestion: IQuestion | null;
-    answers: IAnswers;
-    previousQuestions: IQuestion[];
-    counts: number[];
-    isLastQuestion: boolean;
-    showResults: boolean;
-    basicInfoData: any;
-    surveyData: ISurveyData | null;
-    loading: boolean;
-    fetching: boolean;
-    submitting: boolean;
-}
+    type Counts = Array<number>
+    //
 
-interface ISurveyState {
-    surveyData: ISurveyData | null;
-    currentQuestion: IQuestion | null;
-    basicInfoQuestions: IQuestion[];
-    answers: IAnswers;
-    previousQuestions: IQuestion[];
-    counts: number[];
-    isLastQuestion: boolean;
-    showResults: boolean;
-    basicInfoData: any;
-    loading: boolean;
-    fetching: boolean;
-    submitting: boolean;
+    type SurveyData = {
+        title: string;
+        description: Document;
+        instructions: Instruction[];
+        firstQuestion: Question;
+        noOfBaseQuestions: number;
+    };
+
+    type AgeInformation = {
+        description: Document;
+        nextQuestion: Question;
+        question: Question;
+        title: string;
+    };
+
+    type BasicInformation = {
+        title: string;
+        description: Document;
+        questions: Question[];
+    };
+
+    type Answers = {
+        [key: string]: {
+            [key: string]: {
+                riskFactor?: RiskFactor,
+                [key?: string]: {
+                    riskFactor?: RiskFactor,
+                }
+            }
+        }
+    }
+
+    type BasicInfoData = {
+        [key: string]: string | number
+    }
+
+    type ReduxState = {
+        surveyData: SurveyData | null;
+        currentQuestion: Question | null;
+        ageInformation: AgeInformation | null;
+        basicInfoQuestions: BasicInformation | null;
+        answers: Answers | null;
+        previousQuestions: any;
+        counts: Counts;
+        isLastQuestion: boolean;
+        showResults: boolean;
+        basicInfoData: BasicInfoData;
+        loading: boolean;
+        fetching: boolean;
+        submitting: boolean;
+        riskFactors: FilteredRiskFactor | null;
+    }
 }

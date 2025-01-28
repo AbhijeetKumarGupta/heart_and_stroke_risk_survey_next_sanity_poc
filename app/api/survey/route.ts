@@ -1,41 +1,14 @@
-import { sanityFetch } from "@/sanity/lib/live";
+import contentfulClient from "@/contentful/contentfulClient";
 import services from "@/src/services";
+import { getFormattedResponse } from "@/src/utils/survey";
 
 export async function GET() {
   try {
-    const surveyData = await sanityFetch({
-      query: `*[_type== "survey"][0]{
-        survey_name,
-        description,
-        risk_range,
-        non_dependent_questions_count,
-        first_question->{
-          title,
-          name,
-          description,
-          field_type,
-          isRequired,
-          multipleSelect,
-          field_type,
-          next_Question->{
-            _id,
-          },
-          options[]{
-            title,
-            name,
-            no_of_linked_questions,
-            point,
-            only_option_selected,
-            next_Question[]->{
-              _id,
-            }
-          }
-        },
-      }`
-    })
-
+    const surveyData = await contentfulClient.getEntries({
+      content_type: 'surveyInformation',
+    });
     return new Response(
-      JSON.stringify(surveyData.data),
+      JSON.stringify(getFormattedResponse(surveyData.items)?.[0]),
       { status: 200 }
     );
   } catch (error) {

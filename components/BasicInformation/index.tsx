@@ -1,29 +1,44 @@
+import { ChangeEvent } from "react";
+
 import { SELECTORS } from "@/cypress/selectors";
+import { documentToReact } from "@/src/utils/survey";
 
 import SurveyQuestion from "../SurveyQuestion";
 import styles from "./basicInformation.module.css";
 
-export default function BasicInformation({ basicInfoQuestions, basicInfoData, setBasicInfoData }: IBasicInformationProps) {
+export default function BasicInformation({ basicInfoQuestions, answers, setBasicInfoData }: {
+    basicInfoQuestions: BasicInformation;
+    answers: Answers & BasicInfoData;
+    setBasicInfoData: (data: BasicInfoData) => void
+}) {
     return (
         <div className={styles.formContainer}>
-            <h3 
+            <h3
                 data-test={SELECTORS.SURVEY_PAGE.BASIC_INFORMATION.TITLE}
             >
-                Basic Information
+                {basicInfoQuestions?.title}
             </h3>
+            <div
+                data-test={SELECTORS.WELCOME_PAGE.DESCRIPTION}
+                className={styles.description}
+            >
+                {basicInfoQuestions?.description
+                    ? documentToReact(basicInfoQuestions.description)
+                    : 'Loading description...'}
+            </div>
             <div className={styles.form}>
-                {basicInfoQuestions?.map((question) =>
+                {basicInfoQuestions?.questions?.map((question: Question) =>
                     <div
                         data-test={SELECTORS.SURVEY_PAGE.BASIC_INFORMATION.QUESTIONS}
-                        className={styles.formGroup} 
-                        key={question.name}
+                        className={styles.formGroup}
+                        key={question?.name}
                     >
-                        <SurveyQuestion 
+                        <SurveyQuestion
                             currentQuestion={question}
-                            answers={basicInfoData}
-                            onChange={(e) => 
+                            answers={answers}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
                                 setBasicInfoData({
-                                    [question.name]: e.target.value
+                                    [question?.name]: e.target.value
                                 })
                             }
                             isSubmitting={false}

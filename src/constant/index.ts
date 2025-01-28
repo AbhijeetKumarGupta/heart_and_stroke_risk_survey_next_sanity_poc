@@ -1,6 +1,5 @@
 export enum FIELD_TYPES {
-    NUMERICAL = 'numerical',
-    MULTIPLE_CHOICE = 'multiple_choice',
-    DROPDOWN = 'dropdown',
-    STRING = 'string'
+    NUMERICAL = 'Number',
+    MULTIPLE_CHOICE = 'Multiple Choise',
+    STRING = 'String'
 }

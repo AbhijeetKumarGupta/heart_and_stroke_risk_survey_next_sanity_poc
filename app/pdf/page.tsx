@@ -4,11 +4,12 @@ import { useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { pdf } from '@react-pdf/renderer';
-import PdfDocument from './PdfDocument';
-import styles from './pdfPage.module.css';
 import Header from '@/components/PDF/Header';
 import Body from '@/components/PDF/Body';
 import Footer from '@/components/PDF/Footer';
+
+import PdfDocument from './PdfDocument';
+import styles from './pdfPage.module.css';
 
 const GeneratePDF = () => {
     const [loading, setIsLoading] = useState<boolean>(false);
@@ -43,7 +44,6 @@ const GeneratePDF = () => {
         blob.then((pdfBlob) => {
             processBlob(pdfBlob, 'health-risk-screening[react-pdf]');
         }).catch((error) => {
-            console.log(error)
             alert("Failed to generate PDF");
             setIsLoading(false)
         });
