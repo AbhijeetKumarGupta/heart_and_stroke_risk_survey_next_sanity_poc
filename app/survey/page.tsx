@@ -56,12 +56,14 @@ export default function Survey() {
             if (currentQuestion.allowMultipleSelect) {
                 if (e.target.checked) {
                     if (!subOption && !tempAnswers[currentQuestion.name]?.[e.target.name]) {
+                        //@ts-ignore
                         tempAnswers[currentQuestion.name] = {
                             ...(tempAnswers[currentQuestion.name] || {}),
                             [e.target.name]: { riskFactor: option?.riskFactor }
                         };
                     }
                     if (subOption) {
+                        //@ts-ignore
                         tempAnswers[currentQuestion.name][option.name] = {
                             ...(tempAnswers[currentQuestion.name][option.name] || {}),
                             riskFactor: tempAnswers?.[currentQuestion.name]?.[option.name]?.riskFactor,
@@ -110,11 +112,13 @@ export default function Survey() {
                     }
                 })
                 if (!subOption && !tempAnswers[currentQuestion.name]?.[e.target.name]) {
+                    //@ts-ignore
                     tempAnswers[currentQuestion.name] = {
                         [e.target.name]: { riskFactor: option?.riskFactor }
                     }
                 }
                 if (subOption) {
+                    //@ts-ignore
                     tempAnswers[currentQuestion.name][option.name] = {
                         riskFactor: tempAnswers?.[currentQuestion.name]?.[option.name]?.riskFactor,
                         [e.target.name]: { riskFactor: subOption?.riskFactor }

@@ -1,6 +1,16 @@
 import { Document } from '@contentful/rich-text-types';
 
 declare global {
+    type API_Response = {
+        data: any
+        status: number
+    }
+
+    type ErrorObject = {
+        error: any,
+        value: any
+    }
+    
     type Instruction = {
         title: string;
         description: string;
