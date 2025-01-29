@@ -8,7 +8,7 @@ import RoutingButton from '@/components/RoutingButton/RoutingButton';
 import { SELECTORS } from '@/cypress/selectors';
 import { setSurveyData } from '@/src/store/surveySlice';
 import client from '@/contentful/apolloClient';
-import { GET_SURVEY_INFORMATION } from '@/contentful/graphql/queries/getBlogPosts';
+import { GET_SURVEY_INFORMATION } from '@/contentful/graphql/queries/getSurveyInformation';
 
 import styles from './page.module.css';
 
