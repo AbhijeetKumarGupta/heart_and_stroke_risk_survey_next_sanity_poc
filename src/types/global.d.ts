@@ -90,9 +90,12 @@ declare global {
 
     type Answers = {
         [key: string]: {
+            questionTitle: string,
             [key: string]: {
+                optionTitle: string,
                 riskFactor?: RiskFactor,
                 [key?: string]: {
+                    subOptionTitle: string,
                     riskFactor?: RiskFactor,
                 }
             }
