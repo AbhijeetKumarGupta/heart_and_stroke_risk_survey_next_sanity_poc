@@ -11,12 +11,13 @@ import SurveyQuestion from '@/components/SurveyQuestion';
 import { FIELD_TYPES } from '@/src/constant';
 import BasicInformation from '@/components/BasicInformation';
 import {
-    documentToReact, fetchAgeInformationData, fetchBasicInfoQuestions, fetchNextQuestion
+    documentToReact, fetchAgeInformationData, fetchBasicInfoQuestions, fetchNextQuestion,
+    getProcessedRiskFactors
 } from '@/src/utils/survey';
 import {
     setCurrentQuestion, setBasicInfoQuestions, setAnswers, setCounts,
     setIsLastQuestion, setShowResults, setBasicInfoData, setFetching,
-    setSubmitting, setPreviousQuestions, setLoading, setAgeInformation, setRiskFactors
+    setSubmitting, setPreviousQuestions, setLoading, setAgeInformation
 } from '@/src/store/surveySlice';
 import { SELECTORS } from '@/cypress/selectors';
 
@@ -27,12 +28,12 @@ export default function Survey() {
     const { show_previous_button } = useFlags(['show_previous_button']);
 
     const {
-        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions, riskFactors,
+        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions,
         surveyData, previousQuestions, currentQuestion, basicInfoData, answers, counts, ageInformation
     } = useSelector((state: ReduxState) => state);
 
     console.log({
-        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions, riskFactors,
+        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions,
         surveyData, previousQuestions, currentQuestion, basicInfoData, answers, counts, ageInformation
     })
 
@@ -47,8 +48,7 @@ export default function Survey() {
     }, [dispatch]);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>, option?: Option, subOption?: SubOption) => {
-        const tempAnswers = structuredClone(answers) as Answers
-        let tempRiskFactor = structuredClone(riskFactors) as FilteredRiskFactor;
+        const tempAnswers = structuredClone(answers) as Answers & {[key: string]: any}
         const questionTitle = currentQuestion?.title ?? '';
         const optionTitle = option?.title;
         const subOptionTitle = subOption?.title;
@@ -59,36 +59,21 @@ export default function Survey() {
             if (currentQuestion.allowMultipleSelect) {
                 if (e.target.checked) {
                     if (!subOption && !tempAnswers?.[currentQuestion?.name]?.[e.target.name]) {
-                        //@ts-ignore
                         tempAnswers[currentQuestion.name] = {
                             ...(tempAnswers?.[currentQuestion?.name] || {}),
                             [e.target.name]: { optionTitle, riskFactor: option?.riskFactor }
                         };
                     }
                     if (subOption) {
-                        //@ts-ignore
                         tempAnswers[currentQuestion.name][option.name] = {
                             ...(tempAnswers[currentQuestion.name][option.name] || {}),
                             [e.target.name]: { subOptionTitle, riskFactor: subOption?.riskFactor }
                         };
                     }
-                    if(!tempAnswers?.[currentQuestion?.name]?.questionTitle){
+                    if (!tempAnswers?.[currentQuestion?.name]?.questionTitle) {
                         tempAnswers[currentQuestion.name].questionTitle = questionTitle
                     }
-                    tempRiskFactor = {
-                        ...tempRiskFactor,
-                        [
-                            subOption ? 
-                            `${currentQuestion.name}-${option?.name}-${e.target.name}` : 
-                            `${currentQuestion.name}-${e.target.name}`
-                        ] : (subOption || option)?.riskFactor
-                    } as FilteredRiskFactor
                 } else {
-                    delete tempRiskFactor[
-                        subOption ? 
-                        `${currentQuestion.name}-${option?.name}-${e.target.name}` : 
-                        `${currentQuestion.name}-${e.target.name}`
-                    ];
                     if (!subOption) {
                         delete tempAnswers[currentQuestion.name][e.target.name]
                         if (Object.keys(tempAnswers[currentQuestion.name])?.length === 1) {
@@ -99,43 +84,22 @@ export default function Survey() {
                     }
                 }
             } else {
-                Object.keys(tempRiskFactor).forEach((key) => {
-                    if(!subOption && key.includes(`${currentQuestion.name}`)){
-                        delete tempRiskFactor[key]
-                    }else if(
-                        subOption && 
-                        key.includes(`${currentQuestion.name}`) && 
-                        `${currentQuestion.name}-${option.name}`?.length < key?.length){
-                        delete tempRiskFactor[key]
-                    }
-                })
                 if (!subOption && !tempAnswers[currentQuestion.name]?.[e.target.name]) {
-                    //@ts-ignore
                     tempAnswers[currentQuestion.name] = {
                         [e.target.name]: { optionTitle, riskFactor: option?.riskFactor }
                     }
                 }
                 if (subOption) {
-                    //@ts-ignore
                     tempAnswers[currentQuestion.name][option.name] = {
                         optionTitle: tempAnswers?.[currentQuestion.name]?.[option.name]?.optionTitle,
                         riskFactor: tempAnswers?.[currentQuestion.name]?.[option.name]?.riskFactor,
                         [e.target.name]: { subOptionTitle, riskFactor: subOption?.riskFactor }
                     };
                 }
-                if(!tempAnswers?.[currentQuestion?.name]?.questionTitle){
+                if (!tempAnswers?.[currentQuestion?.name]?.questionTitle) {
                     tempAnswers[currentQuestion.name].questionTitle = questionTitle
                 }
-                tempRiskFactor = {
-                    ...tempRiskFactor,
-                    [
-                        subOption ? 
-                        `${currentQuestion.name}-${option?.name}-${e.target.name}` : 
-                        `${currentQuestion.name}-${e.target.name}`
-                    ] : (subOption || option)?.riskFactor
-                } as FilteredRiskFactor
             }
-            dispatch(setRiskFactors(tempRiskFactor));
         }
         dispatch(setIsLastQuestion(!currentQuestion?.nextQuestion && !nextQue));
         dispatch(setAnswers(structuredClone(tempAnswers)));
@@ -244,7 +208,7 @@ export default function Survey() {
                             </div>
                         </>}
                     {showResults ? (
-                        <SurveyResult riskFactors={riskFactors as FilteredRiskFactor}/>
+                        <SurveyResult riskFactors={getProcessedRiskFactors(answers as Answers)} />
                     ) : (
                         <>
                             {!(currentQuestion || ageInformation) ?

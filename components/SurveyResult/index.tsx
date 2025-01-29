@@ -3,7 +3,7 @@ import { documentToReact, filterUniqueByIdentifier } from "@/src/utils/survey";
 
 import styles from "./surveyResult.module.css";
 
-export default function SurveyResult({ riskFactors }: { riskFactors: FilteredRiskFactor }) {
+export default function SurveyResult({ riskFactors }: { riskFactors: ProcessedRiskFactor }) {
 
     const filteredRiskFactors = filterUniqueByIdentifier(Object.values(riskFactors));
 

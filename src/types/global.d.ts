@@ -60,7 +60,7 @@ declare global {
         description: Document;
     };
 
-    type FilteredRiskFactor = {
+    type ProcessedRiskFactor = {
         [key: string]: RiskFactor
     }
 
@@ -120,6 +120,5 @@ declare global {
         loading: boolean;
         fetching: boolean;
         submitting: boolean;
-        riskFactors: FilteredRiskFactor | null;
     }
 }

@@ -13,8 +13,7 @@ const initialState: ReduxState = {
     basicInfoData: {},
     loading: true,
     fetching: false,
-    submitting: false,
-    riskFactors: {}
+    submitting: false
 };
 
 const surveySlice = createSlice({
@@ -60,9 +59,6 @@ const surveySlice = createSlice({
         setSubmitting(state, action: PayloadAction<ReduxState['submitting']>) {
             state.submitting = action.payload;
         },
-        setRiskFactors(state, action: PayloadAction<ReduxState['riskFactors']>) {
-            state.riskFactors = action.payload;
-        },
         resetSurveyState(state) {
             const tempState = {surveyData: state.surveyData}
             return {...initialState, ...tempState};
@@ -84,8 +80,7 @@ export const {
     setFetching,
     setSubmitting,
     resetSurveyState,
-    setAgeInformation,
-    setRiskFactors
+    setAgeInformation
 } = surveySlice.actions;
 
 export default surveySlice.reducer;

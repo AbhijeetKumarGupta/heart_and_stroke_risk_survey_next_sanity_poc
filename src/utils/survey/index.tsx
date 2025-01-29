@@ -43,6 +43,39 @@ export const getFormattedResponse = (data: any): any => {
     return data;
 }
 
+const getProcessedRiskFactors = (answers: Answers) => {
+    const results: { [key: string]: RiskFactor } = {};
+    const keysToIgnore = ['riskFactor', 'optionTitle', 'questionTitle']
+
+    const processSubOptions = (questionKey: string, optionKey: string, optionData: {[key: string]: any}) => {
+        Object.keys(optionData).forEach((subOptionKey) => {
+            if (keysToIgnore.includes(subOptionKey)) return;
+            const subOptionValue = optionData[subOptionKey];
+            if (subOptionValue) {
+                results[`${questionKey}-${optionKey}-${subOptionKey}`] = 
+                answers[questionKey][optionKey][subOptionKey]?.riskFactor as RiskFactor;
+            }
+        });
+    };
+
+    const processOptions = (questionKey: string, questionData: {[key: string]: any}) => {
+        Object.keys(questionData).forEach((optionKey) => {
+            if (keysToIgnore.includes(optionKey)) return;
+            const optionData = questionData[optionKey];
+            if (optionData) {
+                results[`${questionKey}-${optionKey}`] = answers[questionKey][optionKey]?.riskFactor as RiskFactor
+                processSubOptions(questionKey, optionKey, optionData);
+            }
+        });
+    };
+
+    Object.keys(answers).forEach((questionKey) => {
+        const questionData = answers[questionKey];
+        processOptions(questionKey, questionData);
+    });
+
+    return results;
+};
 
 const filterUniqueByIdentifier = (data: Array<RiskFactor>) => {
     const seenIdentifiers = new Set();
@@ -101,5 +134,6 @@ export {
     fetchSurveyData,
     fetchNextQuestion,
     fetchAgeInformationData,
-    filterUniqueByIdentifier
+    filterUniqueByIdentifier,
+    getProcessedRiskFactors
 }
