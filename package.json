@@ -9,7 +9,8 @@
     "lint": "next lint",
     "cypress:open": "dotenv -e .env.local -- cypress open",
     "cypress:run": "dotenv -e .env.local -- cypress run",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "postinstall": "npx puppeteer install"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.1.6",
