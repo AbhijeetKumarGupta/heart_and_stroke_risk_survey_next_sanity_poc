@@ -74,8 +74,7 @@ const GeneratePDF = () => {
     
         if (response.ok) {
             const pdfBlob = await response.blob();
-            const pdfUrl = URL.createObjectURL(pdfBlob);
-            window.open(pdfUrl);
+            processBlob(pdfBlob, 'health-risk-screening[puppeteer-BE]');
             setIsLoading(false)
         }else {
             alert("Failed to generate PDF");

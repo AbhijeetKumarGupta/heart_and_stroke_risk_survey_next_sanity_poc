@@ -1,6 +1,6 @@
-import puppeteer from "puppeteer";
+import services from "@/src/services";
 
-export const POST = async (req) => {
+export const POST = async (req, res) => {
   const { html } = await req.json();
 
   if (!html) {
@@ -8,27 +8,25 @@ export const POST = async (req) => {
   }
 
   try {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    const backendResponse = await services.post('generate-pdf', { html }, process.env.BE_BASE_URL);
 
-    await page.setContent(html, { waitUntil: 'load' });
-    await page.waitForSelector('body');
+    if (backendResponse?.status === 200) {
+      const backendData = backendResponse.data;
 
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      printBackground: true,
-    });
+      const byteValues = Object.values(backendData);
+      const pdfBuffer = new Uint8Array(byteValues);
 
-    await browser.close();
-
-    return new Response(pdfBuffer, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": "inline; filename=Heart-Risk-Survey-Guide.pdf",
-      },
-    });
+      return new Response(pdfBuffer, {
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": "inline; filename=Heart-Risk-Survey-Guide.pdf",
+        },
+      });
+    } else {
+      return new Response(error, { status: 500, message: 'Error generating PDF on backend' });
+    }
   } catch (error) {
-    console.error(error);
-    return new Response(error, { status: 500 });
+    console.error('Error in Next.js API:', error);
+    return new Response(error, { status: 500, message: 'Error generating PDF on backend' });
   }
 };
