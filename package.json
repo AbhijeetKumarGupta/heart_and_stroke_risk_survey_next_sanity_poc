@@ -10,7 +10,7 @@
     "cypress:open": "dotenv -e .env.local -- cypress open",
     "cypress:run": "dotenv -e .env.local -- cypress run",
     "test": "jest --coverage",
-    "postinstall": "npx puppeteer install"
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.1.6",

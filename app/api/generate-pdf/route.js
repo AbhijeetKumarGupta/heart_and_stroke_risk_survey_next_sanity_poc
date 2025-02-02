@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer, { executablePath } from "puppeteer";
 import { PageContent } from "./components/PageContent";
 
 const riskData = {
@@ -107,8 +107,10 @@ const generateHtml = () => `
 export const POST = async (req) => {
   try {
     const browser = await puppeteer.launch({
+      executablePath: executablePath(),
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      ignoreHTTPSErrors: true,
     });
     const page = await browser.newPage();
 

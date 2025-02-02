@@ -54,7 +54,7 @@ const GeneratePDF = () => {
         const response = await fetch("/api/generate-pdf", {
             method: "POST",
         });
-
+        console.log({response})
         if (response.ok) {
             const blob = await response.blob();
             processBlob(blob, 'health-risk-screening[puppeteer]');
@@ -71,7 +71,6 @@ const GeneratePDF = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ html: `<!DOCTYPE html>${htmlContent}` }),
         });
-    
         if (response.ok) {
             const pdfBlob = await response.blob();
             processBlob(pdfBlob, 'health-risk-screening[puppeteer-BE]');
