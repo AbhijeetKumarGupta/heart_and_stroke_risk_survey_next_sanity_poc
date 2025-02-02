@@ -43,6 +43,10 @@ const runWelcomePageTests = () => {
 const runBasicInformationTests = () => {
     cy.log("Basic information page test begins.");
     cy.getBySelector(SELECTORS.WELCOME_PAGE.START_SURVEY_BUTTON).click();
+
+    // Contentful interceptor test
+    // cy.wait(`@testt`).its("response").then((res) => {console.log(res)})
+
     cy.wait(`@${survey.apiUrlsAndAlias.getBasicInfoQuestions.alias}`).its("response").then((res) => {
         const response = JSON.parse(res?.body);
 

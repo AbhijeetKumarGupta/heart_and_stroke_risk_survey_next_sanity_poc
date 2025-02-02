@@ -22,6 +22,7 @@ import {
 import { SELECTORS } from '@/cypress/selectors';
 
 import styles from "./survey.module.css";
+// import contentfulClient from '@/contentful/contentfulClient';
 
 export default function Survey() {
     const dispatch = useDispatch();
@@ -39,6 +40,13 @@ export default function Survey() {
 
     useEffect(() => {
         const setBasicInfoAndSurveyData = async () => {
+            
+            // Contentful interceptor test
+            // const question = await contentfulClient.getEntries({
+            //     content_type: 'question',
+            //     include: 3,
+            //   })
+
             dispatch(setLoading(true));
             const basic_information_questions = await fetchBasicInfoQuestions();
             dispatch(setBasicInfoQuestions(basic_information_questions?.data));

@@ -11,6 +11,7 @@ import client from '@/contentful/apolloClient';
 import { GET_SURVEY_INFORMATION } from '@/contentful/graphql/queries/getSurveyInformation';
 
 import styles from './page.module.css';
+import contentfulClient from '@/contentful/contentfulClient';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -27,6 +28,9 @@ export default function Home() {
           query: GET_SURVEY_INFORMATION,
         });
         // ------------ //
+        const surveyData = await contentfulClient.getEntries({
+          content_type: 'surveyInformation',
+        });
         const { data: surveyInfo } = await fetchSurveyData();
         dispatch(setSurveyData(surveyInfo));
       } catch (error) {

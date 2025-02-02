@@ -16,6 +16,9 @@ describe(("Survey flow"), () => {
             survey.apiUrlsAndAlias.getSurveyInfo.alias
         );
 
+        // Contentful interceptor test
+        // cy.intercept('GET', '**/master/entries?content_type**').as('testt');
+
         /* Welcome Page */
         runWelcomePageTests()
 
