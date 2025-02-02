@@ -120,5 +120,6 @@ declare global {
         loading: boolean;
         fetching: boolean;
         submitting: boolean;
+        dependentQuestions: { [key: string]: Array<string>} | null
     }
 }

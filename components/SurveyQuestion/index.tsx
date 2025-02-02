@@ -10,7 +10,7 @@ export default function SurveyQuestion(
         {
             currentQuestion: Question;
             answers: Answers & BasicInfoData;
-            onChange: (e: ChangeEvent<HTMLInputElement>, option?: Option, subOption?: SubOption) => void;
+            onChange: (e: ChangeEvent<HTMLInputElement>, currentOption?:any, option?: Option, subOption?: SubOption) => void;
             isSubmitting: boolean;
             isBasicInfo?: boolean
         }
@@ -51,7 +51,7 @@ export default function SurveyQuestion(
                                     type={currentQuestion.allowMultipleSelect ? "checkbox" : "radio"}
                                     name={option?.name}
                                     title={option?.title}
-                                    onChange={(e) => onChange(e, option)}
+                                    onChange={(e) => onChange(e, answers?.[currentQuestion?.name], option)}
                                     value={option?.name}
                                     checked={answers?.[currentQuestion?.name]?.[option?.name] !== undefined}
                                     className={styles.optionInput}
@@ -67,17 +67,18 @@ export default function SurveyQuestion(
                                         className={styles.optionLabel}
                                         key={`${option?.name}-${subOption?.name}`}
                                         style={{ marginLeft: '10px' }}
+                                        data-test={SELECTORS.SURVEY_PAGE.QUESTION.SUB_OPTIONS}
                                     >
                                         <input
                                             type={currentQuestion.allowMultipleSelect ? "checkbox" : "radio"}
                                             name={subOption?.name}
                                             title={subOption?.title}
-                                            onChange={(e) => onChange(e, option, subOption)}
+                                            onChange={(e) => onChange(e, answers?.[currentQuestion?.name], option, subOption)}
                                             value={subOption?.name}
                                             checked={answers?.[currentQuestion?.name]?.[option?.name][subOption?.name] !== undefined}
                                             className={styles.optionInput}
                                             disabled={isSubmitting}
-                                        // data-test={SELECTORS.SURVEY_PAGE.QUESTION.INPUT_FIELD}
+                                            data-test={SELECTORS.SURVEY_PAGE.QUESTION.SUB_INPUT_FIELD}
                                         />
                                         {subOption?.title}
                                     </label>

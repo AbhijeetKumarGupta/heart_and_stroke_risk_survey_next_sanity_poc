@@ -24,7 +24,9 @@ export const SELECTORS = Object.freeze({
             LABEL: `${PAGE.SURVEY}-question-label`,
             DESCRIPTION: `${PAGE.SURVEY}-question-description`,
             OPTIONS: `${PAGE.SURVEY}-options`,
+            SUB_OPTIONS: `${PAGE.SURVEY}-sub-options`,
             INPUT_FIELD: `${PAGE.SURVEY}-input-field`,
+            SUB_INPUT_FIELD: `${PAGE.SURVEY}-sub-input-field`,
         },
         BUTTON: {
             NEXT_OR_GET_RESULTS: `${PAGE.SURVEY}-next-or-get-results-button`,

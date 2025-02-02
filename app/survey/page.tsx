@@ -17,7 +17,8 @@ import {
 import {
     setCurrentQuestion, setBasicInfoQuestions, setAnswers, setCounts,
     setIsLastQuestion, setShowResults, setBasicInfoData, setFetching,
-    setSubmitting, setPreviousQuestions, setLoading, setAgeInformation
+    setSubmitting, setPreviousQuestions, setLoading, setAgeInformation,
+    setDependentQuestions
 } from '@/src/store/surveySlice';
 import { SELECTORS } from '@/cypress/selectors';
 
@@ -29,12 +30,12 @@ export default function Survey() {
     const { show_previous_button } = useFlags(['show_previous_button']);
 
     const {
-        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions,
+        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions, dependentQuestions,
         surveyData, previousQuestions, currentQuestion, basicInfoData, answers, counts, ageInformation
     } = useSelector((state: ReduxState) => state);
 
     console.log({
-        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions,
+        loading, fetching, submitting, isLastQuestion, showResults, basicInfoQuestions, dependentQuestions,
         surveyData, previousQuestions, currentQuestion, basicInfoData, answers, counts, ageInformation
     })
 
@@ -55,11 +56,21 @@ export default function Survey() {
         setBasicInfoAndSurveyData();
     }, [dispatch]);
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>, option?: Option, subOption?: SubOption) => {
-        const tempAnswers = structuredClone(answers) as Answers & {[key: string]: any}
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>, currentOption?: any, option?: Option, subOption?: SubOption) => {
+        const tempAnswers = structuredClone(answers) as Answers & { [key: string]: any }
+        const tempDependentQuestions = structuredClone(dependentQuestions);
         const questionTitle = currentQuestion?.title ?? '';
         const optionTitle = option?.title;
         const subOptionTitle = subOption?.title;
+
+        const deleteAnswers = (optKey: string, deleteFromDependency: boolean) => {
+            tempDependentQuestions?.[optKey]?.forEach((queKey: string) => {
+                delete tempAnswers[queKey]
+            })
+            //TODO: Fix not getting removed issue
+            deleteFromDependency && tempDependentQuestions && delete tempDependentQuestions[optKey]
+        }
+
         let nextQue;
         if (currentQuestion?.fieldType === FIELD_TYPES.MULTIPLE_CHOICE && option) {
             const { nextQuestion } = option
@@ -87,6 +98,7 @@ export default function Survey() {
                         if (Object.keys(tempAnswers[currentQuestion.name])?.length === 1) {
                             delete tempAnswers[currentQuestion.name]
                         }
+                        tempDependentQuestions && deleteAnswers(option.name, !tempDependentQuestions[option.name]?.length)
                     } else {
                         delete tempAnswers[currentQuestion.name][option.name][e.target.name]
                     }
@@ -96,6 +108,13 @@ export default function Survey() {
                     tempAnswers[currentQuestion.name] = {
                         [e.target.name]: { optionTitle, riskFactor: option?.riskFactor }
                     }
+                    const optionKeys = Object.keys(currentOption || {})
+                    ?.filter((key: string) => key !== 'questionTitle' && 
+                    key !== 'optionTitle')
+                    optionKeys?.forEach?.((optKey: string) => {
+                        deleteAnswers(optKey, true)
+                    })
+
                 }
                 if (subOption) {
                     tempAnswers[currentQuestion.name][option.name] = {
@@ -109,22 +128,23 @@ export default function Survey() {
                 }
             }
         }
+        dispatch(setDependentQuestions(tempDependentQuestions));
         dispatch(setIsLastQuestion(!currentQuestion?.nextQuestion && !nextQue));
         dispatch(setAnswers(structuredClone(tempAnswers)));
     }
 
     const handlePrevious = () => {
         dispatch(setIsLastQuestion(false));
-        const tempAnswers = structuredClone(answers) as Answers
+        // const tempAnswers = structuredClone(answers) as Answers
         const lastIndex = previousQuestions.length - 1;
         const previousQuestion = previousQuestions[lastIndex];
-        currentQuestion && delete tempAnswers[currentQuestion?.name];
+        // currentQuestion && delete tempAnswers[currentQuestion?.name];
         const updatedPreviousQuestions = previousQuestions.slice(0, lastIndex);
         const updatedCounts = counts?.length === 1 ? counts : counts.slice(0, lastIndex);
         dispatch(setCurrentQuestion(previousQuestion));
         dispatch(setPreviousQuestions(updatedPreviousQuestions));
         dispatch(setCounts(updatedCounts));
-        dispatch(setAnswers(structuredClone(tempAnswers)));
+        // dispatch(setAnswers(structuredClone(tempAnswers)));
     };
 
     const handleNext = async () => {
@@ -149,6 +169,13 @@ export default function Survey() {
             const questionId = currentOption?.nextQuestion ?
                 currentOption?.nextQuestion?.slug :
                 currentQuestion?.nextQuestion?.slug;
+            if (currentOption?.nextQuestion) {
+                if (!dependentQuestions?.[currentOption.name]?.includes?.(currentOption?.nextQuestion?.name)) {
+                    const tempDependentQuestions = structuredClone(dependentQuestions) || {};
+                    tempDependentQuestions[currentOption.name] = [...(tempDependentQuestions[currentOption.name] || []), currentOption?.nextQuestion?.name];
+                    dispatch(setDependentQuestions(tempDependentQuestions));
+                }
+            }
             if (questionId) {
                 const nextQuestion = await fetchNextQuestion(questionId);
                 const isLastQuestion = !nextQuestion?.data?.nextQuestion &&
