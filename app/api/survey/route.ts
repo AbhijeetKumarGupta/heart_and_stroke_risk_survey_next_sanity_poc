@@ -6,6 +6,7 @@ export async function GET() {
   try {
     const surveyData = await contentfulClient.getEntries({
       content_type: 'surveyInformation',
+      include: 10,
     });
     return new Response(
       JSON.stringify(getFormattedResponse(surveyData.items)?.[0]),
